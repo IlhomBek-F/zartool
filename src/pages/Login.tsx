@@ -2,20 +2,21 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons"
 import { Button, Card, Form, Input } from "antd"
 import { useForm } from "antd/es/form/Form";
 import { useNavigate } from "react-router-dom"
+import { LOGO_TITLE } from "../utils/constants";
 
 function Login() {
     const [form] = useForm()
     const navigate = useNavigate();
 
     const _login = () => {
-       
+       navigate('/main/report')
     }
 
     return (
         <div className=" fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]">
-           <h1 className="text-[25px] text-center mb-3 dark:text-white">ZarTool</h1>
+           <h1 className="text-[25px] text-center mb-3 dark:text-white">{LOGO_TITLE}</h1>
             <Card className="shadow-md m-4 dark:bg-gray-900">
-                <h1 className="text-[5px] text-center mb-3 dark:text-white">Login to ZarTool</h1>
+                <h1 className="text-[25px] text-center mb-3 dark:text-white">Login</h1>
                 <Form name="validateOnly" layout="vertical" form={form}
                 >
                     <Form.Item
