@@ -2,14 +2,14 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons"
 import { Button, Card, Form, Input } from "antd"
 import { useForm } from "antd/es/form/Form";
 import { useNavigate } from "react-router-dom"
-import { LOGO_TITLE } from "../utils/constants";
+import { LOGO_TITLE, ROUTES_PATHS } from "../utils/constants";
 
 function Login() {
     const [form] = useForm()
     const navigate = useNavigate();
 
     const _login = () => {
-       navigate('/main/report')
+       navigate(`/${ROUTES_PATHS.MAIN}/${ROUTES_PATHS.REPORT}`);
     }
 
     return (

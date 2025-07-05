@@ -7,7 +7,7 @@ import {
   VideoCameraOutlined,
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
-import { LOGO_SHORT, LOGO_TITLE } from '../../utils/constants';
+import { LOGO_SHORT, LOGO_TITLE, ROUTES_PATHS } from '../../utils/constants';
 import { Outlet, useNavigate } from 'react-router';
 
 const { Header, Sider, Content } = Layout;
@@ -22,21 +22,21 @@ function MainLayout() {
   const menuItems = [
    {
       key: '1',
-      icon: <UserOutlined />,
-      label: 'nav 1',
-      onClick: () => navigate('./report')
+      icon: <i className='pi pi-chart-line' />,
+      label: 'Кунлик хисобот',
+      onClick: () => navigate(ROUTES_PATHS.REPORT),
    },
    {
       key: '2',
-      icon: <VideoCameraOutlined />,
-      label: 'nav 2',
-      onClick: () => navigate('./order')
+      icon: <i className='pi pi-users' />,
+      label: 'Ижарачилар',
+      onClick: () => navigate(ROUTES_PATHS.RENTERS)
    },
    {
       key: '3',
-      icon: <UploadOutlined />,
-      label: 'nav 3',
-      onClick: () => navigate('./setting')
+      icon: <i className='pi pi-cog' />,
+      label: 'Админ',
+      onClick: () => navigate(ROUTES_PATHS.SETTING)
    },
 ]
 
@@ -47,7 +47,7 @@ function MainLayout() {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
+          defaultSelectedKeys={['2']}
           items={menuItems}
         />
       </Sider>

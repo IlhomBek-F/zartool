@@ -1,28 +1,32 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Login } from "../pages/Login";
 import { MainLayout } from "../components/layout/MainLayout";
+import { ROUTES_PATHS } from "../utils/constants";
+import { Report } from "../pages/Report";
+import { Renters } from "../pages/Renters";
+import { Setting } from "../pages/Setting";
 
 
 export const router = createBrowserRouter([
     {
-        path: "/login",
+        path: `/${ROUTES_PATHS.LOGIN}`,
         element: <Login />
     },
     {
-        path: '/main',
+        path: `/${ROUTES_PATHS.MAIN}`,
         element: <MainLayout />,
         children: [
             {   
-                path: 'report',
-                element: <div>Report page</div>
+                path: ROUTES_PATHS.REPORT,
+                element: <Report />
             },
             {   
-                path: 'order',
-                element: <div>Order page</div>
+                path: ROUTES_PATHS.RENTERS,
+                element: <Renters />
             },
             {
-                path: 'setting',
-                element: <div>Setting Page</div>
+                path: ROUTES_PATHS.SETTING,
+                element: <Setting />
             }
         ]    
     }
