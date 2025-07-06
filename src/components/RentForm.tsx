@@ -5,6 +5,7 @@ import {
   Form,
   Input,
   Select,
+  type FormInstance,
 } from 'antd';
 
 const { Option } = Select;
@@ -20,8 +21,8 @@ const formItemLayout = {
   },
 };
 
-function RentForm() {
-  return <Form {...formItemLayout} layout='vertical' className='w-full'>
+function RentForm({form}: {form: FormInstance}) {
+  return <Form {...formItemLayout} layout='vertical' className='w-full' form={form}>
        <Flex className='w-full'>
            <Form.Item label="Исм, фамилия" name="full_name" className='w-full' hasFeedback  rules={[{ required: true, message: 'Илтимос исм ёки фамилияни киритинг!' }]}>
                 <Input allowClear placeholder="ичарачини исм ёки фамилияси" className='w-full' />
@@ -49,33 +50,33 @@ function RentForm() {
             </Form.Item>
         </Flex>
         
-        <Form.List name="tools">
+        <Form.List name="tools" initialValue={[{ tool: '', size: '', initial_payment: '' }]}>
             {(fields, { add, remove }) => (
             <>
-             {[{key: '1', name: ''}, ...fields].map((listItem, index) => (
-                <Flex align='center'>
-                    <Form.Item label="Ускуна" hasFeedback className='w-full'>
+             {fields.map((listItem, index) => (
+                <Flex align='center' className='w-[98.5%]' key={index}>
+                    <Form.Item name={[listItem.name, 'tool']} label="Ускуна" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
                         <Select placeholder="ускуна" allowClear>
                             <Option value="1">Option 1</Option>
                             <Option value="2">Option 2</Option>
                             <Option value="3">Option 3</Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item label="Размер" hasFeedback className='w-full'>
+                    <Form.Item name={[listItem.name, 'size']} label="Размер" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
                         <Select placeholder="размер" allowClear>
                             <Option value="1">Option 1</Option>
                             <Option value="2">Option 2</Option>
                             <Option value="3">Option 3</Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name="initial_payment" label="Дона" className='w-full'>
+                    <Form.Item name={[listItem.name, 'amount']} label="Дона" className='w-full' rules={[{required: true, message: ''}]}>
                             <Input style={{ width: '100%' }} type='number' placeholder='дона'/>
                     </Form.Item>
-                    {index > 0 && <i className='pi pi-trash cursor-pointer' onClick={() => remove(+listItem.name)} />}
+                    {index > 0 && <i className='pi pi-trash cursor-pointer text-red-500' onClick={() => remove(+listItem.name)} />}
                 </Flex>
              ))}
           <Form.Item className='w-full'>
-            <Button type="dashed" className='w-full' onClick={() => add()} block icon={<i className='pi pi-plus' />} />
+            <Button type="dashed" className='w-full !border-green-500' onClick={() => add()} block icon={<i className='pi pi-plus' />} />
           </Form.Item>
         </>
       )}

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Login } from "../pages/Login";
 import { MainLayout } from "../components/layout/MainLayout";
 import { ROUTES_PATHS } from "../utils/constants";
@@ -9,11 +9,15 @@ import { Setting } from "../pages/Setting";
 
 export const router = createBrowserRouter([
     {
+        index: true,
+        element: <Navigate to="/renters" replace/>
+    },
+    {
         path: `/${ROUTES_PATHS.LOGIN}`,
         element: <Login />
     },
     {
-        path: `/${ROUTES_PATHS.MAIN}`,
+        path: `/`,
         element: <MainLayout />,
         children: [
             {   
@@ -21,6 +25,7 @@ export const router = createBrowserRouter([
                 element: <Report />
             },
             {   
+                index: true,
                 path: ROUTES_PATHS.RENTERS,
                 element: <Renters />
             },

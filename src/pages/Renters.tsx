@@ -5,6 +5,7 @@ import { ColumnActions } from '../components/ColumnActions';
 import { useEffect, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import { RentForm } from '../components/RentForm';
+import { useForm } from 'antd/es/form/Form';
 
 
 interface DataType {
@@ -100,7 +101,8 @@ const data: DataType[] = [
 ];
 
 function Renters() {
-    const [openModal, setOpenModal] = useState(false)
+    const [openModal, setOpenModal] = useState(false);
+    const [form] = useForm();
 
     useEffect(() => {
         addActionColumnToTable()
@@ -123,6 +125,7 @@ function Renters() {
     }
 
     const handleConfirmModal = (value: any) => {
+      console.log(form.getFieldsValue())
         setOpenModal(false)
     }
 
@@ -137,9 +140,8 @@ function Renters() {
             <Button type="primary" className='!bg-green-600 mb-2' icon={<i className='pi pi-plus' />} onClick={handleAddNewRent}>Янги ижара яратиш</Button>
             <Table<DataType> columns={columns} dataSource={data} />
             <Modal isOpen={openModal} handleConfirm={handleConfirmModal} handleClose={() => setOpenModal(false)}>
-                <RentForm />
+                <RentForm form={form}/>
             </Modal>
-            {/* Add more settings components as needed */}
         </div>
     )
 }

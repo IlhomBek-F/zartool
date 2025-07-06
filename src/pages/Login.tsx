@@ -9,7 +9,7 @@ function Login() {
     const navigate = useNavigate();
 
     const _login = () => {
-       navigate(`/${ROUTES_PATHS.MAIN}/${ROUTES_PATHS.REPORT}`);
+       navigate(`/${ROUTES_PATHS.RENTERS}`);
     }
 
     return (
