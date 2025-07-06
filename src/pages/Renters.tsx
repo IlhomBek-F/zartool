@@ -1,5 +1,10 @@
 import { Button, Flex, Popconfirm, Table, Tag, Tooltip } from 'antd';
 import type { TableProps } from 'antd';
+import { Modal } from '../shared/Modal';
+import { ColumnActions } from '../components/ColumnActions';
+import { useEffect, useState } from 'react';
+import type { ColumnsType } from 'antd/es/table';
+import { RentForm } from '../components/RentForm';
 
 
 interface DataType {
@@ -17,7 +22,6 @@ const columns: TableProps<DataType>['columns'] = [
     title: 'Исм, фамилия',
     dataIndex: 'name',
     key: 'name',
-    render: (text) => <a>{text}</a>,
   },
   {
     title: 'Манзил',
@@ -48,13 +52,11 @@ const columns: TableProps<DataType>['columns'] = [
     title: 'Телефон',
     dataIndex: 'phone',
     key: 'phone',
-    render: (text) => <span>{text}</span>,
   },
   {
     title: 'Сана',
     dataIndex: 'date',
     key: 'date',
-    render: (text) => <span>{text}</span>,
   },
   {
     title: 'Бошлангич тўлов',
@@ -63,29 +65,7 @@ const columns: TableProps<DataType>['columns'] = [
     render: (text) => <span>{text} сом</span>,
   },
   {
-    title: '',
     key: 'action',
-    render: (_, record) => (
-     <Flex gap="small" wrap>
-        <Tooltip title="Ижарани ўчириш">
-            <Popconfirm
-          placement="topLeft"
-          title={'Ҳақиқатдан ҳам ўчирилсинми ?'}
-          description={'Диққат: ўчирилган ижара қайта тиклаб бўлмайди.'}
-          okText="Ҳа"
-          cancelText="Йўқ"
-        >
-            <Button type="primary" danger shape="round" icon={<i className='pi pi-trash' />} />
-        </Popconfirm>
-         </Tooltip>
-         <Tooltip title="Ижарани ўзгартириш">
-            <Button type="primary" shape="round" icon={<i className='pi pi-pencil' />} />
-         </Tooltip>
-          <Tooltip title="Ижарани ёпиш">
-            <Button type="primary" className='!bg-green-600' shape="round" icon={<i className='pi pi-lock' />} />
-         </Tooltip>
-        </Flex>
-    ),
   },
 ];
 
@@ -120,11 +100,45 @@ const data: DataType[] = [
 ];
 
 function Renters() {
+    const [openModal, setOpenModal] = useState(false)
+
+    useEffect(() => {
+        addActionColumnToTable()
+    }, [])
+
+    const handleCloseRent = () => {
+
+    }
+
+    const handleEditRent = () => {
+       setOpenModal(true)
+    }
+
+    const handleDeleteRent = () => {
+
+    }
+
+    const handleAddNewRent = () => {
+        setOpenModal(true)
+    }
+
+    const handleConfirmModal = (value: any) => {
+        setOpenModal(false)
+    }
+
+    const addActionColumnToTable = () => {
+      const tableColumns = columns as ColumnsType;
+      tableColumns[tableColumns.length - 1].render = (_, record) => <ColumnActions {...{handleCloseRent, handleDeleteRent, handleEditRent}}/>
+    }
 
     return (
          <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Ижарачилар</h1>
+            <Button type="primary" className='!bg-green-600 mb-2' icon={<i className='pi pi-plus' />} onClick={handleAddNewRent}>Янги ижара яратиш</Button>
             <Table<DataType> columns={columns} dataSource={data} />
+            <Modal isOpen={openModal} handleConfirm={handleConfirmModal} handleClose={() => setOpenModal(false)}>
+                <RentForm />
+            </Modal>
             {/* Add more settings components as needed */}
         </div>
     )
