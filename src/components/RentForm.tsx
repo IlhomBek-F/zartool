@@ -22,6 +22,7 @@ const formItemLayout = {
 };
 
 function RentForm({form}: {form: FormInstance}) {
+  
   return <Form {...formItemLayout} layout='vertical' className='w-full' form={form}>
        <Flex className='w-full'>
            <Form.Item label="Исм, фамилия" name="full_name" className='w-full' hasFeedback  rules={[{ required: true, message: 'Илтимос исм ёки фамилияни киритинг!' }]}>

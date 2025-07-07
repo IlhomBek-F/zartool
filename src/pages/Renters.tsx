@@ -1,4 +1,4 @@
-import { Button, Flex, Popconfirm, Table, Tag, Tooltip } from 'antd';
+import { Button, Flex, Form, Popconfirm, Table, Tag, Tooltip } from 'antd';
 import type { TableProps } from 'antd';
 import { Modal } from '../shared/Modal';
 import { ColumnActions } from '../components/ColumnActions';
@@ -102,7 +102,7 @@ const data: DataType[] = [
 
 function Renters() {
     const [openModal, setOpenModal] = useState(false);
-    const [form] = useForm();
+    const [form] = Form.useForm();
 
     useEffect(() => {
         addActionColumnToTable()
@@ -124,8 +124,8 @@ function Renters() {
         setOpenModal(true)
     }
 
-    const handleConfirmModal = (value: any) => {
-      console.log(form.getFieldsValue())
+    const handleConfirmModal = async (value: any) => {
+        await form.validateFields()
         setOpenModal(false)
     }
 
@@ -139,8 +139,10 @@ function Renters() {
             <h1 className="text-2xl font-bold mb-4">Ижарачилар</h1>
             <Button type="primary" className='!bg-green-600 mb-2' icon={<i className='pi pi-plus' />} onClick={handleAddNewRent}>Янги ижара яратиш</Button>
             <Table<DataType> columns={columns} dataSource={data} />
-            <Modal isOpen={openModal} handleConfirm={handleConfirmModal} handleClose={() => setOpenModal(false)}>
-                <RentForm form={form}/>
+            <Modal isOpen={openModal} 
+                   handleConfirm={handleConfirmModal} 
+                   handleClose={() => setOpenModal(false)}>
+                  <RentForm form={form}/>
             </Modal>
         </div>
     )
