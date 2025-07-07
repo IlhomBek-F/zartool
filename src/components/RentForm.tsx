@@ -7,6 +7,10 @@ import {
   Select,
   type FormInstance,
 } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import type { WareHouseToolType } from '../core/models';
+import { getRentTools } from '../api';
 
 const { Option } = Select;
 
@@ -22,7 +26,15 @@ const formItemLayout = {
 };
 
 function RentForm({form}: {form: FormInstance}) {
-  
+  const [tools, setTools] = useState<WareHouseToolType[]>([]);
+
+  useEffect(() => {
+    getRentTools()
+     .then((res) => {
+       setTools(res)
+     })
+  }, [])
+ 
   return <Form {...formItemLayout} layout='vertical' className='w-full' form={form}>
        <Flex className='w-full'>
            <Form.Item label="Исм, фамилия" name="full_name" className='w-full' hasFeedback  rules={[{ required: true, message: 'Илтимос исм ёки фамилияни киритинг!' }]}>
@@ -43,31 +55,27 @@ function RentForm({form}: {form: FormInstance}) {
        </Flex>
 
          <Flex className='w-full'>
-           <Form.Item name="date" label="Сана" className='w-full' hasFeedback rules={[{ required: true, message: 'Илтимос санани киритинг!' }]}>
-               <DatePicker className='w-full'/>
+           <Form.Item name="date" label="Сана" initialValue={dayjs()} className='w-full' hasFeedback rules={[{ required: true, message: 'Илтимос санани киритинг!' }]}>
+               <DatePicker format={'MM-DD-YYYY'} className='w-full' />
             </Form.Item>
-            <Form.Item name="initial_payment" label="Бошлангич тўлов" className='w-full'>
+            <Form.Item name="initial_payment" initialValue={0} label="Бошлангич тўлов" className='w-full'>
                 <Input style={{ width: '100%' }} type='number'/>
             </Form.Item>
         </Flex>
         
-        <Form.List name="tools" initialValue={[{ tool: '', size: '', initial_payment: '' }]}>
+        <Form.List name="tools" initialValue={[{ name: '', size: '', amount: ''}]}>
             {(fields, { add, remove }) => (
             <>
              {fields.map((listItem, index) => (
                 <Flex align='center' className='w-[98.5%]' key={index}>
-                    <Form.Item name={[listItem.name, 'tool']} label="Ускуна" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
+                    <Form.Item name={[listItem.name, 'name']} label="Ускуна" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
                         <Select placeholder="ускуна" allowClear>
-                            <Option value="1">Option 1</Option>
-                            <Option value="2">Option 2</Option>
-                            <Option value="3">Option 3</Option>
+                           {tools.map((tool) => <Option value={tool.id}>{tool.name}</Option>)}
                         </Select>
                     </Form.Item>
                     <Form.Item name={[listItem.name, 'size']} label="Размер" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
                         <Select placeholder="размер" allowClear>
-                            <Option value="1">Option 1</Option>
-                            <Option value="2">Option 2</Option>
-                            <Option value="3">Option 3</Option>
+                           {tools.map((tool) => <Option value={tool.id}>{tool.size}</Option>)}
                         </Select>
                     </Form.Item>
                     <Form.Item name={[listItem.name, 'amount']} label="Дона" className='w-full' hasFeedback rules={[{required: true, message: ''}]}>

@@ -22,12 +22,13 @@ export const router = createBrowserRouter([
         children: [
             {   
                 path: ROUTES_PATHS.REPORT,
-                element: <Report />
+                element: <Report />,
             },
             {   
                 index: true,
                 path: ROUTES_PATHS.RENTERS,
-                element: <Renters />
+                element: <Renters />,
+                errorElement: <div>Error page</div>
             },
             {
                 path: ROUTES_PATHS.SETTING,

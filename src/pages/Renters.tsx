@@ -1,28 +1,19 @@
-import { Button, Flex, Form, Popconfirm, Table, Tag, Tooltip } from 'antd';
+import { Button, Form, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { Modal } from '../shared/Modal';
 import { ColumnActions } from '../components/ColumnActions';
 import { useEffect, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import { RentForm } from '../components/RentForm';
-import { useForm } from 'antd/es/form/Form';
+import { closeRent, createRent, deleteRent, getRenters, updateRent } from '../api';
+import type { RentType } from '../core/models';
 
 
-interface DataType {
-  key: string;
-  name: string;
-  address: string;
-  tags: string[];
-  phone: string,
-  date: string,
-  initial_payment: string
-}
-
-const columns: TableProps<DataType>['columns'] = [
+const columns: TableProps<RentType>['columns'] = [
   {
     title: 'Исм, фамилия',
-    dataIndex: 'name',
-    key: 'name',
+    dataIndex: 'full_name',
+    key: 'full_name',
   },
   {
     title: 'Манзил',
@@ -33,16 +24,12 @@ const columns: TableProps<DataType>['columns'] = [
     title: 'Ижарага берилган нарсалар',
     key: 'tags',
     dataIndex: 'tags',
-    render: (_, { tags }) => (
+    render: (_, { tools }) => (
       <>
-        {tags.map((tag) => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
+        {tools.map((tag, index) => {
           return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
+            <Tag color='green' key={index}>
+              {tag.name.toUpperCase()}
             </Tag>
           );
         })}
@@ -53,6 +40,7 @@ const columns: TableProps<DataType>['columns'] = [
     title: 'Телефон',
     dataIndex: 'phone',
     key: 'phone',
+    render: (_, {phones}) => <span>{phones[0]} {phones[1] && `| ${phones[1]}`}</span>,
   },
   {
     title: 'Сана',
@@ -70,75 +58,68 @@ const columns: TableProps<DataType>['columns'] = [
   },
 ];
 
-const data: DataType[] = [
-  {
-    key: '1',
-    name: 'John Brown',
-    address: 'New York No. 1 Lake Park',
-    tags: ['мишалка 2', 'леса 20'],
-    phone: '123-456-7890',
-    date: '2023-10-01',
-    initial_payment: '100'
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    address: 'London No. 1 Lake Park',
-    tags: ['опаловка | 2 x 190 | 10'],
-    phone: '123-456-7890',
-    date: '2023-10-01',
-    initial_payment: '300'
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['леса', 'опаловка'],
-    phone: '123-456-7890',
-    date: '2023-10-01',
-    initial_payment: '500'
-  },
-];
-
 function Renters() {
     const [openModal, setOpenModal] = useState(false);
+    const [data, setData] = useState<RentType[]>([]);
+    const [editRentId, setEditRentId] = useState<number | null>(null);
     const [form] = Form.useForm();
 
     useEffect(() => {
-        addActionColumnToTable()
+        getData()
     }, [])
 
-    const handleCloseRent = () => {
-
+    const handleCloseRent = (id: number) => {
+       closeRent(id)
+        .then(() => {
+          getData();
+        })
     }
 
-    const handleEditRent = () => {
-       setOpenModal(true)
+    const handleEditRent = (id: number) => {
+       setEditRentId(id);
+       setOpenModal(true);
     }
 
-    const handleDeleteRent = () => {
-
+    const handleDeleteRent = (id: number) => {
+       deleteRent(id)
+       .then(() => {
+         getData();
+       })
     }
 
-    const handleAddNewRent = () => {
-        setOpenModal(true)
+    const handleConfirmModal = async () => {
+        await form.validateFields();
+        const {phone_1, phone_2, date, ...rest} = form.getFieldsValue();
+        const rent = {phones: [phone_1, phone_2], date: date.format('MM-DD-YYYY'), ...rest};
+        
+        if(editRentId) {
+          await updateRent({id: editRentId, ...rent})
+        } else {
+          await createRent(rent);
+        }
+
+        setOpenModal(false);
+        getData();
     }
 
-    const handleConfirmModal = async (value: any) => {
-        await form.validateFields()
-        setOpenModal(false)
+    const getData = () => {
+        getRenters()
+        .then((res: RentType[]) => {
+            setData(() => res.map((r) => ({...r, key: r.id})));
+            addActionColumnToTable();
+        })
     }
 
     const addActionColumnToTable = () => {
       const tableColumns = columns as ColumnsType;
-      tableColumns[tableColumns.length - 1].render = (_, record) => <ColumnActions {...{handleCloseRent, handleDeleteRent, handleEditRent}}/>
+      tableColumns[tableColumns.length - 1].render = (_, rent) => <ColumnActions id={rent.id} {...{handleCloseRent, handleDeleteRent, handleEditRent}}/>
     }
 
     return (
          <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Ижарачилар</h1>
-            <Button type="primary" className='!bg-green-600 mb-2' icon={<i className='pi pi-plus' />} onClick={handleAddNewRent}>Янги ижара яратиш</Button>
-            <Table<DataType> columns={columns} dataSource={data} />
+            <Button type="primary" className='!bg-green-600 mb-2' icon={<i className='pi pi-plus' />} onClick={() => setOpenModal(true)}>Янги ижара яратиш</Button>
+            <Table<RentType> columns={columns} dataSource={data} key={1}/>
             <Modal isOpen={openModal} 
                    handleConfirm={handleConfirmModal} 
                    handleClose={() => setOpenModal(false)}>

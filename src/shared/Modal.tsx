@@ -2,8 +2,8 @@ import { Modal as AntModal } from 'antd';
 
 type ModalProps = {
     children: React.ReactNode;
-    handleConfirm: (value: any) => void;
-    handleClose: () => void;
+    handleConfirm: VoidFunction;
+    handleClose: VoidFunction;
     isOpen: boolean;
 }
 
@@ -16,7 +16,7 @@ function Modal({children, isOpen, handleClose, handleConfirm}: ModalProps) {
         maskClosable={false}
         closable={false}
         okText="Сақлаш"
-        onOk={() => handleConfirm(false)}
+        onOk={handleConfirm}
         onCancel={handleClose}
         cancelText="Бекор қилиш"
       >

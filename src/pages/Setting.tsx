@@ -1,30 +1,8 @@
 import { Button, Flex, Form, Input, Popconfirm, Table, Tooltip, type TableProps } from "antd";
 import { Modal } from "../shared/Modal";
-import { useState } from "react";
-
-interface DataType {
-  id: string;
-  name: string;
-  size: string
-}
-
-const data: DataType[] = [
-  {
-    id: '1',
-    name: 'Мышалка',
-    size: '1.8',
-  },
-  {
-    id: '2',
-    name: 'Опалавка',
-    size: '2 x 3'
-  },
-  {
-    id: '3',
-    name: 'Леса',
-    size: '1 x 1.5'
-  },
-];
+import { useEffect, useState } from "react";
+import { addNewTool, deleteTool, getRentTools, updateTool } from "../api";
+import type { WareHouseToolType } from "../core/models";
 
 const formItemLayout = {
   labelCol: {
@@ -39,13 +17,46 @@ const formItemLayout = {
 
 function Setting() {
     const [openModal, setOpenModal] = useState(false);
+    const [tools, setTools] = useState<WareHouseToolType[]>([]);
+    const [editToolId, setEditToolId] = useState<number | null>(null)
     const [form] = Form.useForm();
 
-    const handleConfirmModal = () => {
-        setOpenModal(false)
+     useEffect(() => {
+       getTools();
+    }, [])
+
+    const getTools = () => {
+       getRentTools()
+        .then((res) => {
+           setTools(res.map((tool) => ({...tool, key: tool.id})))
+        })
     }
 
-    const columns: TableProps<DataType>['columns'] = [
+    const handleConfirmModal = () => {
+      const formData = form.getFieldsValue().tools;
+      const action = editToolId ? updateTool({...formData[0], id: editToolId}) : addNewTool(formData)
+      
+      action.then(() => {
+          getTools();
+          setEditToolId(null);
+          setOpenModal(false)
+      })
+    }
+
+    const handleDeleteTool = (id: number) => {
+       deleteTool(id)
+       .then(() => {
+         getTools()
+       })
+    }
+
+    const handleEditTool = (tool: WareHouseToolType) => {
+       form.setFieldsValue({tools: [tool]})
+       setEditToolId(tool.id);
+       setOpenModal(true);
+    }
+
+    const columns: TableProps<WareHouseToolType>['columns'] = [
         {
             title: 'Ускуна',
             dataIndex: 'name',
@@ -58,15 +69,16 @@ function Setting() {
         },
         {
             key: 'action',
-            render: (_, record) => (
+            render: (_, tool) => (
                 <Flex justify="end" gap={10}>
                     <Tooltip title="Ускунани ўзгартириш">
-                        <Button type="primary" icon={<i className='pi pi-pencil' />} onClick={() => setOpenModal(true)}/>
+                        <Button type="primary" icon={<i className='pi pi-pencil' />} onClick={() => handleEditTool(tool)}/>
                      </Tooltip>
                     <Tooltip title="Ускунани ўчириш">
                         <Popconfirm placement="topLeft"
                                 title={'Ҳақиқатдан ҳам ўчирилсинми ?'}
                                 okText="Ҳа"
+                                onConfirm={() => handleDeleteTool(tool.id)}
                                 cancelText="Йўқ">
                         <Button type="primary" danger icon={<i className='pi pi-trash' />} />
                        </Popconfirm>
@@ -84,10 +96,10 @@ function Setting() {
                     icon={<i className='pi pi-plus' />} 
                     onClick={() => setOpenModal(true)}
                     >Янги ускуна киритиш</Button>
-            <Table<DataType> columns={columns} dataSource={data} />
+            <Table<WareHouseToolType> columns={columns} dataSource={tools} />
             <Modal isOpen={openModal} handleClose={() => setOpenModal(false)} handleConfirm={handleConfirmModal}>
                <Form {...formItemLayout} layout='vertical' className='w-full' form={form}>
-                   <Form.List name="tools" initialValue={[{ tool: '', size: ''}]}>
+                   <Form.List name="tools" initialValue={[{ name: '', size: ''}]}>
                         {(fields, { add, remove }) => (
                           <>
                             {fields.map((listItem, index) => (
@@ -101,9 +113,11 @@ function Setting() {
                                     {index > 0 && <i className='pi pi-trash cursor-pointer text-red-500' onClick={() => remove(+listItem.name)} />}
                                 </Flex>
                             ))}
-                                <Form.Item className='w-full'>
+                               {
+                                !editToolId && <Form.Item className='w-full'>
                                   <Button type="dashed" className='w-full !border-green-500' onClick={() => add()} block icon={<i className='pi pi-plus' />} />
                                 </Form.Item>
+                               } 
                             </>
                         )}
                     </Form.List>
