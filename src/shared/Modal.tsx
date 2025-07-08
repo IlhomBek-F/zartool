@@ -10,8 +10,8 @@ type ModalProps = {
 function Modal({children, isOpen, handleClose, handleConfirm}: ModalProps) {
      
     return <AntModal
-        style={{ top: 20 }}
         open={isOpen}
+        centered
         width={700}
         maskClosable={false}
         closable={false}

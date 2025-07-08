@@ -70,8 +70,8 @@ function RentForm({form}: {form: FormInstance}) {
                             <Option value="3">Option 3</Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name={[listItem.name, 'amount']} label="Дона" className='w-full' rules={[{required: true, message: ''}]}>
-                            <Input style={{ width: '100%' }} type='number' placeholder='дона'/>
+                    <Form.Item name={[listItem.name, 'amount']} label="Дона" className='w-full' hasFeedback rules={[{required: true, message: ''}]}>
+                            <Input style={{ width: '100%' }} type='number' placeholder='дона' allowClear/>
                     </Form.Item>
                     {index > 0 && <i className='pi pi-trash cursor-pointer text-red-500' onClick={() => remove(+listItem.name)} />}
                 </Flex>

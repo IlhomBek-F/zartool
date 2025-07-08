@@ -35,7 +35,7 @@ function MainLayout() {
    {
       key: '3',
       icon: <i className='pi pi-cog' />,
-      label: 'Админ',
+      label: 'Омбор/склад',
       onClick: () => navigate(ROUTES_PATHS.SETTING)
    },
 ]
