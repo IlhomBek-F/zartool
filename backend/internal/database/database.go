@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 	"zartool/api/routes"
+	"zartool/models"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -44,6 +45,8 @@ func connectDB() *gorm.DB {
 
 func InitServer() *http.Server {
 	db := connectDB()
+
+	db.AutoMigrate(&models.User{}, &models.RentTools{})
 
 	portToInt, _ := strconv.Atoi(os.Getenv("PORT"))
 
