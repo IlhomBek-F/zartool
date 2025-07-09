@@ -47,6 +47,7 @@ func InitServer() *http.Server {
 	db := connectDB()
 
 	db.AutoMigrate(&models.User{}, &models.RentTools{})
+	db.AutoMigrate(&models.WarehouseTools{})
 
 	portToInt, _ := strconv.Atoi(os.Getenv("PORT"))
 
