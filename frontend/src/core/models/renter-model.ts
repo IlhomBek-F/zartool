@@ -1,3 +1,5 @@
+import type { RentToolType } from "./rent-tool-model";
+
 export type RentType = {
     id: number,
     full_name: string,
@@ -9,11 +11,9 @@ export type RentType = {
     status: 'closed' | 'open'
 }
 
-export type RentToolType = {
-    id: number,
-    name: string,
-    size: string,
-    amount: number
-}
 
-export type WareHouseToolType = Omit< RentToolType, 'amount'>
+export type CreateRentRequestType = Omit<RentType, 'id'>
+
+export type UpdateRentRequestType = RentType;
+
+export type GetRentersResponseType = RentType[];

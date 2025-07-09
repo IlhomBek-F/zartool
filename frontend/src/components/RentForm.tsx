@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import type { WareHouseToolType } from '../core/models';
+import type { WareHouseToolType } from '../core/models/rent-tool-model';
 import { getRentTools } from '../api';
 
 const { Option } = Select;

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import { RentForm } from '../components/RentForm';
 import { closeRent, createRent, deleteRent, getRenters, updateRent } from '../api';
-import type { RentType } from '../core/models';
+import type { RentType } from '../core/models/rent-tool-model';
 
 
 const columns: TableProps<RentType>['columns'] = [
@@ -93,7 +93,8 @@ function Renters() {
         const rent = {phones: [phone_1, phone_2], date: date.format('MM-DD-YYYY'), ...rest};
         
         if(editRentId) {
-          await updateRent({id: editRentId, ...rent})
+          await updateRent({id: editRentId, ...rent});
+          setEditRentId(null)
         } else {
           await createRent(rent);
         }

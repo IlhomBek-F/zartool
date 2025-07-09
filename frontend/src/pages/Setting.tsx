@@ -2,7 +2,7 @@ import { Button, Flex, Form, Input, Popconfirm, Table, Tooltip, type TableProps 
 import { Modal } from "../shared/Modal";
 import { useEffect, useState } from "react";
 import { addNewTool, deleteTool, getRentTools, updateTool } from "../api";
-import type { WareHouseToolType } from "../core/models";
+import type { WareHouseToolType } from "../core/models/rent-tool-model";
 
 const formItemLayout = {
   labelCol: {
