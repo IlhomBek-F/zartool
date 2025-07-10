@@ -1,7 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type RentTools struct {
-	ID       uint   `gorm:"primaryKey" json:"id"`
+	gorm.Model
 	Name     string `json:"name"`
 	Size     string `json:"size"`
 	Quantity uint   `json:"quantity"`

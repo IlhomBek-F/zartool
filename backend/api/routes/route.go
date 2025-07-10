@@ -2,10 +2,8 @@ package routes
 
 import (
 	"net/http"
-	"os"
 	"zartool/api/controller"
 
-	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
@@ -24,17 +22,19 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(10))))
 	e.Use(configureCORS())
 
-	secretKey := os.Getenv("ACCESS_TOKEN_SECRET")
+	// secretKey := os.Getenv("ACCESS_TOKEN_SECRET")
 
 	publicRoute := e.Group("/api")
-	protectedRoute := publicRoute.Group("")
+	// protectedRoute := e.Group("/api")
 
 	server := controller.Controller{
 		DB: *s.DB,
 	}
 
-	publicRoute.POST("login", server.Login)
-	protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
+	// protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
+
+	publicRoute.POST("/create-owner", server.CreateOwner)
+	publicRoute.POST("/login", server.Login)
 
 	return e
 }

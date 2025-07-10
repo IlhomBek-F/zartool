@@ -32,7 +32,7 @@ func connectDB() *gorm.DB {
 		return dbInstance
 	}
 
-	te := fmt.Sprintf("host=localhost user=%s password=%s dbname=%s port=%s sslmode=disable", username, password, database, port)
+	te := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable search_path=%s", host, username, password, database, port, schema)
 
 	db, err := gorm.Open(postgres.Open(te), &gorm.Config{})
 
@@ -48,6 +48,7 @@ func InitServer() *http.Server {
 
 	db.AutoMigrate(&models.User{}, &models.RentTools{})
 	db.AutoMigrate(&models.WarehouseTools{})
+	db.AutoMigrate(&models.Owners{})
 
 	portToInt, _ := strconv.Atoi(os.Getenv("PORT"))
 
