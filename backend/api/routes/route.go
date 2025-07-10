@@ -42,6 +42,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	{
 		protectedRoute.POST("/create-new-rental", server.CreateNewRental)
+		protectedRoute.PUT("/rentals", server.UpdateRental)
+		protectedRoute.GET("/rentals", server.GetRentals)
 	}
 
 	{
