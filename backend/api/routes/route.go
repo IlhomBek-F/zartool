@@ -2,8 +2,10 @@ package routes
 
 import (
 	"net/http"
+	"os"
 	"zartool/api/controller"
 
+	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
@@ -22,19 +24,32 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(10))))
 	e.Use(configureCORS())
 
-	// secretKey := os.Getenv("ACCESS_TOKEN_SECRET")
+	secretKey := os.Getenv("ACCESS_TOKEN_SECRET")
 
 	publicRoute := e.Group("/api")
-	// protectedRoute := e.Group("/api")
+	protectedRoute := e.Group("/api")
 
 	server := controller.Controller{
 		DB: *s.DB,
 	}
 
-	// protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
+	protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
 
-	publicRoute.POST("/create-owner", server.CreateOwner)
-	publicRoute.POST("/login", server.Login)
+	{
+		publicRoute.POST("/create-owner", server.CreateOwner)
+		publicRoute.POST("/login", server.Login)
+	}
+
+	{
+		protectedRoute.POST("/create-new-rental", server.CreateNewRental)
+	}
+
+	{
+		protectedRoute.GET("/warehouse-tools", server.GetWareHouseTools)
+		protectedRoute.PUT("/warehouse-tool", server.UpdateWareHouseTool)
+		protectedRoute.DELETE("/warehouse-tool/:id", server.DeleteWarehouseTool)
+		protectedRoute.POST("/add-warehouses-tool", server.AddNewTools)
+	}
 
 	return e
 }
