@@ -55,6 +55,14 @@ func UpdateRental(db gorm.DB, rental models.User) error {
 	return db.Save(rental).Error
 }
 
+func DeleteRental(db gorm.DB, rentalId uint) error {
+	return db.Select("RentTools").Delete(&models.User{ID: rentalId}).Error
+}
+
+func CompleteRental(db gorm.DB, rentalId uint) error {
+	return db.Model(&models.User{ID: rentalId}).Update("active", true).Error
+}
+
 func GetRentals(db gorm.DB) ([]models.User, error) {
 	var rentals []models.User
 

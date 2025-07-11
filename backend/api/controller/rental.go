@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 	"zartool/models"
 	"zartool/repositories"
 
@@ -46,6 +47,44 @@ func (c Controller) UpdateRental(e echo.Context) error {
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    currentRental,
+	}
+
+	return e.JSON(http.StatusOK, resp)
+}
+
+func (c Controller) DeleteRental(e echo.Context) error {
+	id, err := strconv.Atoi(e.Param("id"))
+
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+	}
+
+	if err := repositories.DeleteRental(c.DB, uint(id)); err != nil {
+		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal Server error"})
+	}
+
+	resp := models.SuccessResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+	}
+
+	return e.JSON(http.StatusOK, resp)
+}
+
+func (c Controller) CompleteRental(e echo.Context) error {
+	id, err := strconv.Atoi(e.Param("id"))
+
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+	}
+
+	if err := repositories.CompleteRental(c.DB, uint(id)); err != nil {
+		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+	}
+
+	resp := models.SuccessResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
 	}
 
 	return e.JSON(http.StatusOK, resp)
