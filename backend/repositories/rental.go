@@ -19,15 +19,40 @@ func CreateNewRental(db gorm.DB, rental models.User) error {
 }
 
 func UpdateRental(db gorm.DB, rental models.User) error {
-	err := db.Model(&rental).Association("RentTools").Replace(rental.RentTools)
+	var existingTools []models.RentTools
+	var updatedRentTools = rental.RentTools
 
-	if err != nil {
+	if err := db.Model(&rental).Association("RentTools").Find(&existingTools); err != nil {
 		return err
 	}
 
-	result := db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&rental)
+	toolsMap := make(map[uint]models.RentTools)
 
-	return result.Error
+	for _, tool := range updatedRentTools {
+		toolsMap[tool.ID] = tool
+	}
+
+	removedTools := []models.RentTools{}
+
+	for _, currentTool := range existingTools {
+		if _, ok := toolsMap[currentTool.ID]; !ok {
+			removedTools = append(removedTools, currentTool)
+		}
+	}
+
+	if err := db.Select("RentTools").Delete(removedTools).Error; err != nil {
+		return err
+	}
+
+	if len(toolsMap) > 0 {
+		for _, updatingTool := range toolsMap {
+			if err := db.Model(&models.RentTools{}).Where("user_id = ? AND id = ?", rental.ID, updatingTool.ID).Updates(updatingTool); err.Error != nil {
+				return err.Error
+			}
+		}
+	}
+
+	return db.Save(rental).Error
 }
 
 func GetRentals(db gorm.DB) ([]models.User, error) {
