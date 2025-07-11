@@ -7,15 +7,11 @@ import (
 )
 
 func CreateNewRental(db gorm.DB, rental models.User) error {
-	result := db.Create(&rental)
-
-	if result.Error != nil {
-		return result.Error
+	if err := db.Create(&rental); err != nil {
+		return err.Error
 	}
 
-	result = db.Save(&rental)
-
-	return result.Error
+	return db.Save(&rental).Error
 }
 
 func UpdateRental(db gorm.DB, rental models.User) error {
@@ -56,11 +52,17 @@ func UpdateRental(db gorm.DB, rental models.User) error {
 }
 
 func DeleteRental(db gorm.DB, rentalId uint) error {
-	return db.Select("RentTools").Delete(&models.User{ID: rentalId}).Error
+	var user models.User
+	user.ID = rentalId
+
+	return db.Select("RentTools").Delete(&user).Error
 }
 
 func CompleteRental(db gorm.DB, rentalId uint) error {
-	return db.Model(&models.User{ID: rentalId}).Update("active", true).Error
+	var user models.User
+	user.ID = rentalId
+
+	return db.Model(&user).Update("active", true).Error
 }
 
 func GetRentals(db gorm.DB) ([]models.User, error) {
