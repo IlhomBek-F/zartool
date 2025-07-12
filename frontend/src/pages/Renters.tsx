@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { RentForm } from '../components/RentForm';
 import { completeRent, createRent, deleteRent, getRenters, updateRent } from '../api';
 import type { RentType } from '../core/models/renter-model';
+import type { RentToolType } from '../core/models/rent-tool-model';
 
 
 const columns: TableProps<RentType>['columns'] = [
@@ -13,11 +14,13 @@ const columns: TableProps<RentType>['columns'] = [
     title: 'Исм, фамилия',
     dataIndex: 'full_name',
     key: 'full_name',
+    render: (value, record) => <span className={!record.active && 'line-through' || ''}>{value}</span>
   },
   {
     title: 'Манзил',
     dataIndex: 'address',
     key: 'address',
+    render: (value, record) => <span className={!record.active && 'line-through' || ''}>{value}</span>
   },
   {
     title: 'Ижарага берилган нарсалар',
@@ -39,7 +42,7 @@ const columns: TableProps<RentType>['columns'] = [
     title: 'Телефон',
     dataIndex: 'phone',
     key: 'phone',
-    render: (_, {phones}) => <span>{phones[0]} {phones[1] && `| ${phones[1]}`}</span>,
+    render: (_, {phones, active}) => <span className={!active && 'line-through' || ''}>{phones[0]} {phones[1] && `| ${phones[1]}`}</span>,
   },
   {
     title: 'Сана',
@@ -50,10 +53,7 @@ const columns: TableProps<RentType>['columns'] = [
     title: 'Бошлангич тўлов',
     dataIndex: 'initial_payment',
     key: 'initial_payment',
-    render: (text) => <span>{text} сом</span>,
-  },
-  {
-    key: 'action',
+    render: (text, record) => <span className={!record.active && 'line-through' || ''}>{text} сом</span>,
   },
 ];
 
@@ -75,8 +75,10 @@ function Renters() {
     }
 
     const handleEditRent = (id: number) => {
-       const rental = data.find((rent: RentType) => rent.id === id);
-       form.setFieldsValue(rental);
+      const {phones, ...rest} = data.find((rent: RentType) => rent.id === id);
+      form.setFieldsValue(rest);
+       form.setFieldValue('phone_1', phones[0])
+       form.setFieldValue('phone_2', phones[1])
        setEditRentId(id);
        setOpenModal(true);
     }
@@ -89,8 +91,8 @@ function Renters() {
     }
 
     const handleConfirmModal = async () => {
-        const {phone_1, phone_2, date, ...rest} = await form.validateFields();
-        const rent = {phones: [phone_1, phone_2], ...rest};
+        const {phone_1, phone_2, date, rent_tools, ...rest} = await form.validateFields();
+        const rent = {phones: [phone_1, phone_2], ...rest, rent_tools: rent_tools.map((tool: RentToolType) => ({...tool, quantity: +tool.quantity}))};
         
         if(editRentId) {
           await updateRent({id: editRentId, ...rent});
@@ -102,6 +104,11 @@ function Renters() {
         form.resetFields();
         setOpenModal(false);
         getData();
+    }
+
+    const handleCloseModal = () => {
+       setOpenModal(false)
+       form.resetFields();
     }
 
     const getData = () => {
@@ -122,7 +129,7 @@ function Renters() {
             )} dataSource={data} key={1}/>
             <Modal isOpen={openModal} 
                    handleConfirm={handleConfirmModal} 
-                   handleClose={() => setOpenModal(false)}>
+                   handleClose={handleCloseModal}>
                   <RentForm form={form}/>
             </Modal>
         </div>

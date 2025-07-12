@@ -36,8 +36,10 @@ func UpdateRental(db gorm.DB, rental models.User) error {
 		}
 	}
 
-	if err := db.Select("RentTools").Delete(removedTools).Error; err != nil {
-		return err
+	if len(removedTools) > 0 {
+		if err := db.Select("RentTools").Delete(removedTools).Error; err != nil {
+			return err
+		}
 	}
 
 	if len(toolsMap) > 0 {
@@ -62,7 +64,7 @@ func CompleteRental(db gorm.DB, rentalId uint) error {
 	var user models.User
 	user.ID = rentalId
 
-	return db.Model(&user).Update("active", true).Error
+	return db.Model(&user).Update("active", false).Error
 }
 
 func GetRentals(db gorm.DB) ([]models.User, error) {

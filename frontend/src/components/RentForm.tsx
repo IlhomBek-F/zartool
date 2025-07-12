@@ -63,7 +63,7 @@ function RentForm({form}: {form: FormInstance}) {
             </Form.Item>
         </Flex>
         
-        <Form.List name="rent_tools" initialValue={[{ name: '', size: '', quantity: ''}]}>
+        <Form.List name="rent_tools" initialValue={[{ name: '', size: '', quantity: 0}]}>
             {(fields, { add, remove }) => (
             <>
              {fields.map((listItem, index) => (
