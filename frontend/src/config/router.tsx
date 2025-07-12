@@ -5,12 +5,13 @@ import { ROUTES_PATHS } from "../utils/constants";
 import { Report } from "../pages/Report";
 import { Renters } from "../pages/Renters";
 import { Setting } from "../pages/Setting";
+import { PrivateRoute } from "./PrivateRoute";
 
 
 export const router = createBrowserRouter([
     {
         index: true,
-        element: <Navigate to="/renters" replace/>
+        element: <PrivateRoute><Navigate to="/renters" replace/></PrivateRoute>
     },
     {
         path: `/${ROUTES_PATHS.LOGIN}`,
@@ -18,7 +19,7 @@ export const router = createBrowserRouter([
     },
     {
         path: `/`,
-        element: <MainLayout />,
+        element: <PrivateRoute><MainLayout /></PrivateRoute>,
         children: [
             {   
                 path: ROUTES_PATHS.REPORT,

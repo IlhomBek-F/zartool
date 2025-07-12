@@ -3,13 +3,22 @@ import { Button, Card, Form, Input } from "antd"
 import { useForm } from "antd/es/form/Form";
 import { useNavigate } from "react-router-dom"
 import { LOGO_TITLE, ROUTES_PATHS } from "../utils/constants";
+import { login } from "../api";
+import { setToken } from "../utils/tokenUtil";
 
 function Login() {
     const [form] = useForm()
     const navigate = useNavigate();
 
-    const _login = () => {
-       navigate(`/${ROUTES_PATHS.RENTERS}`);
+    const _login = async () => {
+        const credential = await form.validateFields();
+        const {username , password} = credential;
+        
+        login(username, password)
+        .then(({data}) => {
+            setToken(data.access_token);
+            navigate(`/${ROUTES_PATHS.RENTERS}`);
+        })
     }
 
     return (

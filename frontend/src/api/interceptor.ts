@@ -1,5 +1,7 @@
 import { getToken } from "../utils/tokenUtil";
-import { privateHttp } from "./http";
+import { privateHttp, publicHttp } from "./http";
+
+publicHttp.interceptors.response.use((response) => response.data, (error) => Promise.reject(error));
 
 privateHttp.interceptors.request.use(function (config) {
     const token = getToken();
@@ -13,7 +15,7 @@ privateHttp.interceptors.request.use(function (config) {
     return config;
   }, (error) =>  Promise.reject(error));
 
-privateHttp.interceptors.response.use((response) => response, function (error) {
+privateHttp.interceptors.response.use((response) => response.data, function (error) {
     if(error.status === 401) {
        window.location.replace("login")
     }

@@ -2,7 +2,7 @@ import { Button, Flex, Form, Input, Popconfirm, Table, Tooltip, type TableProps 
 import { Modal } from "../shared/Modal";
 import { useEffect, useState } from "react";
 import { addNewTool, deleteTool, getRentTools, updateTool } from "../api";
-import type { WareHouseToolType } from "../core/models/rent-tool-model";
+import type { WarehouseToolType } from "../core/models/warehouse-tool-model";
 
 const formItemLayout = {
   labelCol: {
@@ -17,7 +17,7 @@ const formItemLayout = {
 
 function Setting() {
     const [openModal, setOpenModal] = useState(false);
-    const [tools, setTools] = useState<WareHouseToolType[]>([]);
+    const [tools, setTools] = useState<WarehouseToolType[]>([]);
     const [editToolId, setEditToolId] = useState<number | null>(null)
     const [form] = Form.useForm();
 
@@ -27,19 +27,22 @@ function Setting() {
 
     const getTools = () => {
        getRentTools()
-        .then((res) => {
-           setTools(res.map((tool) => ({...tool, key: tool.id})))
+        .then(({data}) => {
+           setTools(data.map((tool) => ({...tool, key: tool.id})))
         })
     }
 
-    const handleConfirmModal = () => {
-      const formData = form.getFieldsValue().tools;
-      const action = editToolId ? updateTool({...formData[0], id: editToolId}) : addNewTool(formData)
+    const handleConfirmModal = async () => {
+      const formData = await form.validateFields();
+      const {tools} = formData;
+
+      const action = editToolId ? updateTool({...tools[0], id: editToolId}) : addNewTool(tools)
       
       action.then(() => {
           getTools();
           setEditToolId(null);
-          setOpenModal(false)
+          form.resetFields();
+          setOpenModal(false);
       })
     }
 
@@ -50,13 +53,13 @@ function Setting() {
        })
     }
 
-    const handleEditTool = (tool: WareHouseToolType) => {
+    const handleEditTool = (tool: WarehouseToolType) => {
        form.setFieldsValue({tools: [tool]})
        setEditToolId(tool.id);
        setOpenModal(true);
     }
 
-    const columns: TableProps<WareHouseToolType>['columns'] = [
+    const columns: TableProps<WarehouseToolType>['columns'] = [
         {
             title: 'Ускуна',
             dataIndex: 'name',
@@ -96,7 +99,7 @@ function Setting() {
                     icon={<i className='pi pi-plus' />} 
                     onClick={() => setOpenModal(true)}
                     >Янги ускуна киритиш</Button>
-            <Table<WareHouseToolType> columns={columns} dataSource={tools} />
+            <Table<WarehouseToolType> columns={columns} dataSource={tools} />
             <Modal isOpen={openModal} handleClose={() => setOpenModal(false)} handleConfirm={handleConfirmModal}>
                <Form {...formItemLayout} layout='vertical' className='w-full' form={form}>
                    <Form.List name="tools" initialValue={[{ name: '', size: ''}]}>

@@ -37,7 +37,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	{
 		publicRoute.POST("/create-owner", server.CreateOwner)
-		publicRoute.POST("/login", server.Login)
+		publicRoute.POST("/auth/login", server.Login)
 	}
 
 	{

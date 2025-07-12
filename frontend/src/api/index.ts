@@ -1,8 +1,14 @@
+import type { ResponseType } from "../core/models/base-model";
 import type { CreateRentToolRequestType, RentToolType, UpdateRentToolRequestType } from "../core/models/rent-tool-model";
 import type { CreateRentRequestType, RentType, UpdateRentRequestType } from "../core/models/renter-model";
+import { privateHttp, publicHttp } from "./http";
 
 let data: RentType[] = [];
 let tools: RentToolType[] = [];
+
+export async function login(login: string, password: string) {
+    return publicHttp.post("/auth/login", {login, password})
+}
 
 export async function createRent(payload: CreateRentRequestType): Promise<RentType> {
   return new Promise((resolve, _) => {
@@ -39,30 +45,18 @@ export async function closeRent(id: number) {
     })
 }
 
-export async function getRentTools(): Promise<RentToolType[]> {
-    return new Promise((resolve, _) => {
-        resolve(tools)
-    })
+export async function getRentTools(): Promise<ResponseType<RentToolType[]>> {
+    return privateHttp.get("/warehouse-tools")
 }
 
 export async function addNewTool(payload: CreateRentToolRequestType[]) {
- return new Promise((resolve, _) => {
-    payload = payload.map((tool, index) => ({...tool, id: Date.now() + index}))
-    tools.push(...payload as RentToolType[]);
-    resolve(tools)
- })
+ return privateHttp.post("/add-warehouses-tool", payload)
 }
 
 export async function updateTool(payload: UpdateRentToolRequestType) {
-    return new Promise((resolve, _) => {
-        tools = tools.map(tool => tool.id === payload.id ? payload : tool);
-        resolve(payload)
-    })
+    return privateHttp.put("/warehouse-tool", payload)
 }
 
 export async function deleteTool(id: number) {
-    return new Promise((resolve, _) => {
-        tools = tools.filter(tool => tool.id !== id);
-        resolve(id)
-    })
+    return privateHttp.delete(`/warehouse-tool/${id}`)
 }

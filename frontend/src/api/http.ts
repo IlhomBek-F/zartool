@@ -5,7 +5,7 @@ export const publicHttp = axios.create({
   timeout: 1000,
   headers: {
     "Content-Type": "application/json"
-  }
+  },
 });
 
 export const privateHttp = axios.create({
