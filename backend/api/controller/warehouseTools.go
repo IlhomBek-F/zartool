@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"net/url"
 	"strconv"
 	"zartool/models"
 	"zartool/repositories"
@@ -10,7 +11,12 @@ import (
 )
 
 func (s *Controller) GetWareHouseTools(e echo.Context) error {
-	tools, err := repositories.GetWareHouseTools(s.DB)
+	var queries url.Values = e.QueryParams()
+
+	page, _ := strconv.Atoi(queries.Get("page"))
+	pageSize, _ := strconv.Atoi(queries.Get("page_size"))
+
+	tools, meta, err := repositories.GetWareHouseTools(s.DB, page, pageSize)
 
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
@@ -20,6 +26,7 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    tools,
+		Meta:    meta,
 	}
 
 	return e.JSON(http.StatusOK, resp)

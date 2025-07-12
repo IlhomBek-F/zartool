@@ -3,6 +3,8 @@ import { Modal } from "../shared/Modal";
 import { useEffect, useState } from "react";
 import { addNewTool, deleteTool, getRentTools, updateTool } from "../api";
 import type { WarehouseToolType } from "../core/models/warehouse-tool-model";
+import type { ResponseMetaType } from "../core/models/base-model";
+import { TABLE_PAGE_SIZE } from "../utils/constants";
 
 const formItemLayout = {
   labelCol: {
@@ -17,7 +19,7 @@ const formItemLayout = {
 
 function Setting() {
     const [openModal, setOpenModal] = useState(false);
-    const [tools, setTools] = useState<WarehouseToolType[]>([]);
+    const [dataSource, setTools] = useState<{meta: ResponseMetaType, data: WarehouseToolType[]}>();
     const [editToolId, setEditToolId] = useState<number | null>(null)
     const [form] = Form.useForm();
 
@@ -25,10 +27,10 @@ function Setting() {
        getTools();
     }, [])
 
-    const getTools = () => {
-       getRentTools()
-        .then(({data}) => {
-           setTools(data.map((tool) => ({...tool, key: tool.id})))
+    const getTools = (page = 1) => {
+       getRentTools(page)
+        .then(({data, meta}) => {
+           setTools({meta, data: data.map((t) => ({...t, key: t.id}))})
         })
     }
 
@@ -79,10 +81,10 @@ function Setting() {
                      </Tooltip>
                     <Tooltip title="Ускунани ўчириш">
                         <Popconfirm placement="topLeft"
-                                title={'Ҳақиқатдан ҳам ўчирилсинми ?'}
-                                okText="Ҳа"
-                                onConfirm={() => handleDeleteTool(tool.id)}
-                                cancelText="Йўқ">
+                                    title={'Ҳақиқатдан ҳам ўчирилсинми ?'}
+                                    okText="Ҳа"
+                                    onConfirm={() => handleDeleteTool(tool.id)}
+                                    cancelText="Йўқ">
                         <Button type="primary" danger icon={<i className='pi pi-trash' />} />
                        </Popconfirm>
                     </Tooltip>
@@ -99,11 +101,21 @@ function Setting() {
                     icon={<i className='pi pi-plus' />} 
                     onClick={() => setOpenModal(true)}
                     >Янги ускуна киритиш</Button>
-            <Table<WarehouseToolType> columns={columns} dataSource={tools} />
-            <Modal isOpen={openModal} handleClose={() => setOpenModal(false)} handleConfirm={handleConfirmModal}>
-               <Form {...formItemLayout} layout='vertical' className='w-full' form={form}>
+            <Table<WarehouseToolType> pagination={dataSource?.meta.total > 5 && {
+                                      pageSize: TABLE_PAGE_SIZE, 
+                                      onChange: (page: number) => getTools(page), 
+                                      total: dataSource?.meta.total}} 
+                                      columns={columns} 
+                                      dataSource={dataSource?.data} />
+            <Modal isOpen={openModal} 
+                   handleClose={() => setOpenModal(false)} 
+                   handleConfirm={handleConfirmModal}>
+               <Form {...formItemLayout} 
+                     layout='vertical' 
+                     className='w-full' 
+                     form={form}>
                    <Form.List name="tools" initialValue={[{ name: '', size: ''}]}>
-                        {(fields, { add, remove }) => (
+                        {(fields, { add, remove }, index) => (
                           <>
                             {fields.map((listItem, index) => (
                                 <Flex className='w-[98.5%]' key={index} align="center">
@@ -117,7 +129,7 @@ function Setting() {
                                 </Flex>
                             ))}
                                {
-                                !editToolId && <Form.Item className='w-full'>
+                                !editToolId && <Form.Item className='w-full' >
                                   <Button type="dashed" className='w-full !border-green-500' onClick={() => add()} block icon={<i className='pi pi-plus' />} />
                                 </Form.Item>
                                } 

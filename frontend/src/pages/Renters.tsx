@@ -2,7 +2,7 @@ import { Button, Form, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { Modal } from '../shared/Modal';
 import { ColumnActions } from '../components/ColumnActions';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { RentForm } from '../components/RentForm';
 import { completeRent, createRent, deleteRent, getRenters, updateRent } from '../api';
 import type { RentType } from '../core/models/renter-model';
@@ -116,8 +116,8 @@ function Renters() {
 
     const getData = (page = 1) => {
         getRenters(page)
-        .then(res => {
-            setData({meta: res.meta, rents: res.data});
+        .then(({meta, data}) => {
+            setData({meta: meta, rents: data.map((r) => ({...r, key: r.id}))});
         })
     }
 

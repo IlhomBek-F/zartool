@@ -28,8 +28,8 @@ export async function completeRent(id: number): Promise<ResponseType> {
     return privateHttp.post(`/rental/complete/${id}`)
 }
 
-export async function getRentTools(): Promise<ResponseType<RentToolType[]>> {
-    return privateHttp.get("/warehouse-tools")
+export async function getRentTools(page = 1): Promise<ResponseType<RentToolType[]>> {
+    return privateHttp.get("/warehouse-tools", {params: {page, page_size: TABLE_PAGE_SIZE}})
 }
 
 export async function addNewTool(payload: CreateRentToolRequestType[]) {
