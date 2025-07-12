@@ -1,18 +1,17 @@
+import type { BaseModel } from "./base-model";
 import type { RentToolType } from "./rent-tool-model";
 
-export type RentType = {
-    id: number,
+export type RentType = BaseModel & {
     full_name: string,
     address?: string,
-    tools: RentToolType[],
+    rent_tools: RentToolType[],
     phones: string[],
-    date: string,
     pre_payment: string,
-    status: 'closed' | 'open'
+    active: boolean
 }
 
 
-export type CreateRentRequestType = Omit<RentType, 'id'>
+export type CreateRentRequestType = Omit<RentType, 'id' | 'created_at' | 'updated_at'>
 
 export type UpdateRentRequestType = RentType;
 

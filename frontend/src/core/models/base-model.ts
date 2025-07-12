@@ -5,7 +5,7 @@ export type BaseModel = {
     updatedAt?: string;
 }
 
-export type ResponseType<T> = {
+export type ResponseType<T = any> = {
     status: number;
     message: string;
     data: T

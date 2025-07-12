@@ -41,18 +41,18 @@ func (s *Server) RegisterRoutes() http.Handler {
 	}
 
 	{
-		protectedRoute.POST("/create-new-rental", server.CreateNewRental)
-		protectedRoute.PUT("/rentals", server.UpdateRental)
-		protectedRoute.DELETE("/rentals/:id", server.DeleteRental)
-		protectedRoute.POST("/complete/:id", server.CompleteRental)
+		protectedRoute.POST("/rental/create", server.CreateNewRental)
+		protectedRoute.PUT("/rental/update", server.UpdateRental)
+		protectedRoute.DELETE("/rental/delete/:id", server.DeleteRental)
+		protectedRoute.POST("/rental/complete/:id", server.CompleteRental)
 		protectedRoute.GET("/rentals", server.GetRentals)
 	}
 
 	{
 		protectedRoute.GET("/warehouse-tools", server.GetWareHouseTools)
-		protectedRoute.PUT("/warehouse-tool", server.UpdateWareHouseTool)
-		protectedRoute.DELETE("/warehouse-tool/:id", server.DeleteWarehouseTool)
-		protectedRoute.POST("/add-warehouses-tool", server.AddNewTools)
+		protectedRoute.PUT("/warehouse-tool/update", server.UpdateWareHouseTool)
+		protectedRoute.DELETE("/warehouse-tool/delete/:id", server.DeleteWarehouseTool)
+		protectedRoute.POST("/warehouse-tool/create", server.AddNewTools)
 	}
 
 	return e

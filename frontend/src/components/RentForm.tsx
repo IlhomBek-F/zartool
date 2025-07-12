@@ -9,8 +9,8 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import type { WareHouseToolType } from '../core/models/rent-tool-model';
 import { getRentTools } from '../api';
+import type { WarehouseToolType } from '../core/models/warehouse-tool-model';
 
 const { Option } = Select;
 
@@ -26,12 +26,12 @@ const formItemLayout = {
 };
 
 function RentForm({form}: {form: FormInstance}) {
-  const [tools, setTools] = useState<WareHouseToolType[]>([]);
+  const [tools, setTools] = useState<WarehouseToolType[]>([]);
 
   useEffect(() => {
     getRentTools()
-     .then((res) => {
-       setTools(res)
+     .then(({data}) => {
+       setTools(data)
      })
   }, [])
  
@@ -63,22 +63,22 @@ function RentForm({form}: {form: FormInstance}) {
             </Form.Item>
         </Flex>
         
-        <Form.List name="tools" initialValue={[{ name: '', size: '', amount: ''}]}>
+        <Form.List name="rent_tools" initialValue={[{ name: '', size: '', quantity: ''}]}>
             {(fields, { add, remove }) => (
             <>
              {fields.map((listItem, index) => (
                 <Flex align='center' className='w-[98.5%]' key={index}>
                     <Form.Item name={[listItem.name, 'name']} label="Ускуна" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
                         <Select placeholder="ускуна" allowClear>
-                           {tools.map((tool) => <Option value={tool.id}>{tool.name}</Option>)}
+                           {tools.map((tool) => <Option value={tool.name}>{tool.name}</Option>)}
                         </Select>
                     </Form.Item>
                     <Form.Item name={[listItem.name, 'size']} label="Размер" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
                         <Select placeholder="размер" allowClear>
-                           {tools.map((tool) => <Option value={tool.id}>{tool.size}</Option>)}
+                           {tools.map((tool) => <Option value={tool.size}>{tool.size}</Option>)}
                         </Select>
                     </Form.Item>
-                    <Form.Item name={[listItem.name, 'amount']} label="Дона" className='w-full' hasFeedback rules={[{required: true, message: ''}]}>
+                    <Form.Item name={[listItem.name, 'quantity']} label="Дона" className='w-full' hasFeedback rules={[{required: true, message: ''}]}>
                             <Input style={{ width: '100%' }} type='number' placeholder='дона' allowClear/>
                     </Form.Item>
                     {index > 0 && <i className='pi pi-trash cursor-pointer text-red-500' onClick={() => remove(+listItem.name)} />}

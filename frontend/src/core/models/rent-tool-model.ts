@@ -1,10 +1,11 @@
-export type RentToolType = {
-    id: number,
+import type { BaseModel } from "./base-model";
+
+export type RentToolType = BaseModel & {
     name: string,
     size: string,
-    amount: number
+    quantity: number
 }
 
-export type CreateRentToolRequestType = Omit<RentToolType, 'amount' | 'id'>;
-export type UpdateRentToolRequestType = Omit<RentToolType, 'amount'>;
+export type CreateRentToolRequestType = Pick<RentToolType, "name" | 'size' | "quantity">;
+export type UpdateRentToolRequestType = Omit<RentToolType, 'quantity'>;
 
