@@ -1,13 +1,14 @@
 import { Flex, Tooltip, Popconfirm, Button } from "antd";
+import type { RentType } from "../core/models/renter-model";
 
 type ColumnActionsProps = {
-    id: number;
+    item: RentType;
     handleDeleteRent: (id: number) => void;
     handleEditRent: (id: number) => void;
     handleCloseRent: (id: number) => void;
 }
 
-function ColumnActions({handleCloseRent, handleDeleteRent, handleEditRent, id}: ColumnActionsProps) {
+function ColumnActions({handleCloseRent, handleDeleteRent, handleEditRent, item}: ColumnActionsProps) {
     
     return <Flex gap="small" wrap>
         <Tooltip title="Ижарани ўчириш">
@@ -15,17 +16,17 @@ function ColumnActions({handleCloseRent, handleDeleteRent, handleEditRent, id}: 
                         title={'Ҳақиқатдан ҳам ўчирилсинми ?'}
                         description={'Диққат: ўчирилган ижара қайта тиклаб бўлмайди.'}
                         okText="Ҳа"
-                        onConfirm={() => handleDeleteRent(id)}
+                        onConfirm={() => handleDeleteRent(item.id)}
                         cancelText="Йўқ"
                     >
                     <Button type="primary" danger icon={<i className='pi pi-trash' />} />
             </Popconfirm>
         </Tooltip>
         <Tooltip title="Ижарани ўзгартириш">
-            <Button type="primary" icon={<i className='pi pi-pencil' />} onClick={() => handleEditRent(id)}/>
+            <Button type="primary" disabled={!item.active} icon={<i className='pi pi-pencil' />} onClick={() => handleEditRent(item.id)}/>
         </Tooltip>
         <Tooltip title="Ижарани ёпиш">
-            <Button type="primary" className='!bg-green-600' icon={<i className='pi pi-lock' />} onClick={() => handleCloseRent(id)}/>
+            <Button type="primary" disabled={!item.active} className='!bg-green-600' icon={<i className='pi pi-lock' />} onClick={() => handleCloseRent(item.id)}/>
         </Tooltip>
     </Flex>
 }

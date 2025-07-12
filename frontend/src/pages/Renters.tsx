@@ -7,7 +7,7 @@ import { RentForm } from '../components/RentForm';
 import { completeRent, createRent, deleteRent, getRenters, updateRent } from '../api';
 import type { RentType } from '../core/models/renter-model';
 import type { RentToolType } from '../core/models/rent-tool-model';
-
+import { formatDate } from '../utils/helper';
 
 const columns: TableProps<RentType>['columns'] = [
   {
@@ -28,10 +28,10 @@ const columns: TableProps<RentType>['columns'] = [
     dataIndex: 'tags',
     render: (_, { rent_tools }) => (
       <>
-        {rent_tools.map((tag, index) => {
+        {rent_tools.map((tool: RentToolType, index) => {
           return (
             <Tag color='green' key={index}>
-              {tag.name.toUpperCase()}
+              {tool.name.toUpperCase()} | {tool.size} | {tool.quantity}
             </Tag>
           );
         })}
@@ -46,13 +46,14 @@ const columns: TableProps<RentType>['columns'] = [
   },
   {
     title: 'Сана',
-    dataIndex: 'date',
-    key: 'date',
+    dataIndex: 'created_at',
+    key: 'created_at',
+    render: (value) => <span>{formatDate(value)}</span>
   },
   {
     title: 'Бошлангич тўлов',
-    dataIndex: 'initial_payment',
-    key: 'initial_payment',
+    dataIndex: 'pre_payment',
+    key: 'pre_payment',
     render: (text, record) => <span className={!record.active && 'line-through' || ''}>{text} сом</span>,
   },
 ];
@@ -92,10 +93,11 @@ function Renters() {
 
     const handleConfirmModal = async () => {
         const {phone_1, phone_2, date, rent_tools, ...rest} = await form.validateFields();
-        const rent = {phones: [phone_1, phone_2], ...rest, rent_tools: rent_tools.map((tool: RentToolType) => ({...tool, quantity: +tool.quantity}))};
+        const toolQuantityToNumber = rent_tools.map((tool: RentToolType) => ({...tool, quantity: +tool.quantity}))
+        const rent = {phones: [phone_1, phone_2], ...rest, rent_tools: toolQuantityToNumber, pre_payment: +rest.pre_payment};
         
         if(editRentId) {
-          await updateRent({id: editRentId, ...rent});
+          await updateRent({id: editRentId, ...rent, active: true});
           setEditRentId(null)
         } else {
           await createRent(rent);
@@ -124,7 +126,7 @@ function Renters() {
             <Button type="primary" className='!bg-green-600 mb-2' icon={<i className='pi pi-plus' />} onClick={() => setOpenModal(true)}>Янги ижара яратиш</Button>
             <Table<RentType> columns={columns?.concat({
                 key: "action",
-                render: (_, record) => <ColumnActions id={record.id} {...{handleCloseRent, handleEditRent, handleDeleteRent}}/>
+                render: (_, record) => <ColumnActions item={record} {...{handleCloseRent, handleEditRent, handleDeleteRent}}/>
               }
             )} dataSource={data} key={1}/>
             <Modal isOpen={openModal} 

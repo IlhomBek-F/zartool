@@ -58,7 +58,7 @@ function RentForm({form}: {form: FormInstance}) {
            <Form.Item name="date" label="Сана" initialValue={dayjs()} className='w-full' hasFeedback rules={[{ required: true, message: 'Илтимос санани киритинг!' }]}>
                <DatePicker format={'MM-DD-YYYY'} className='w-full' />
             </Form.Item>
-            <Form.Item name="initial_payment" initialValue={0} label="Бошлангич тўлов" className='w-full'>
+            <Form.Item name="pre_payment" initialValue={0} label="Бошлангич тўлов" className='w-full'>
                 <Input style={{ width: '100%' }} type='number'/>
             </Form.Item>
         </Flex>

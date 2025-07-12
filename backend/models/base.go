@@ -11,3 +11,9 @@ type Base struct {
 	UpdatedAt time.Time    `json:"updated_at"`
 	DeletedAt sql.NullTime `gorm:"index" json:"-"`
 }
+
+type MetaModel struct {
+	Page    uint `json:"page"`
+	Total   uint `json:"total"`
+	PerPage uint `json:"per_page"`
+}

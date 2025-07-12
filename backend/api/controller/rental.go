@@ -85,6 +85,7 @@ func (c Controller) CompleteRental(e echo.Context) error {
 	resp := models.SuccessResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
+		Meta:    models.MetaModel{},
 	}
 
 	return e.JSON(http.StatusOK, resp)
