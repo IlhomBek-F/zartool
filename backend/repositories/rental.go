@@ -67,14 +67,23 @@ func CompleteRental(db gorm.DB, rentalId uint) error {
 	return db.Model(&user).Update("active", false).Error
 }
 
-func GetRentals(db gorm.DB) ([]models.User, error) {
+func GetRentals(db gorm.DB, page int, pageSize int) ([]models.User, models.MetaModel, error) {
 	var rentals []models.User
+	var count int64
+	var metaData models.MetaModel
 
-	result := db.Preload("RentTools").Find(&rentals)
-
-	if result.Error != nil {
-		return []models.User{}, result.Error
+	if countResult := db.Model(&rentals).Count(&count); countResult.Error != nil {
+		return nil, metaData, countResult.Error
 	}
 
-	return rentals, nil
+	result := db.Scopes(Paginate(page, pageSize)).Preload("RentTools").Find(&rentals)
+
+	if result.Error != nil {
+		return nil, metaData, result.Error
+	}
+
+	metaData.Page = page
+	metaData.Total = count
+
+	return rentals, metaData, nil
 }

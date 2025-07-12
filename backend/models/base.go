@@ -13,7 +13,7 @@ type Base struct {
 }
 
 type MetaModel struct {
-	Page    uint `json:"page"`
-	Total   uint `json:"total"`
-	PerPage uint `json:"per_page"`
+	Page    int   `json:"page"`
+	Total   int64 `json:"total"`
+	PerPage uint  `json:"per_page"`
 }

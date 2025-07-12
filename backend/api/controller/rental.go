@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"net/url"
 	"strconv"
 	"zartool/models"
 	"zartool/repositories"
@@ -92,8 +93,12 @@ func (c Controller) CompleteRental(e echo.Context) error {
 }
 
 func (c Controller) GetRentals(e echo.Context) error {
+	var queryMap url.Values = e.QueryParams()
 
-	rentals, err := repositories.GetRentals(c.DB)
+	page, _ := strconv.Atoi(queryMap.Get("page"))
+	pageSize, _ := strconv.Atoi(queryMap.Get("page_size"))
+
+	rentals, metaData, err := repositories.GetRentals(c.DB, page, pageSize)
 
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Interna; server error"})
@@ -103,6 +108,7 @@ func (c Controller) GetRentals(e echo.Context) error {
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    rentals,
+		Meta:    metaData,
 	}
 
 	return e.JSON(http.StatusOK, resp)

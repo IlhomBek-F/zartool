@@ -8,6 +8,8 @@ import { completeRent, createRent, deleteRent, getRenters, updateRent } from '..
 import type { RentType } from '../core/models/renter-model';
 import type { RentToolType } from '../core/models/rent-tool-model';
 import { formatDate } from '../utils/helper';
+import type { ResponseMetaType } from '../core/models/base-model';
+import { TABLE_PAGE_SIZE } from '../utils/constants';
 
 const columns: TableProps<RentType>['columns'] = [
   {
@@ -60,7 +62,7 @@ const columns: TableProps<RentType>['columns'] = [
 
 function Renters() {
     const [openModal, setOpenModal] = useState(false);
-    const [data, setData] = useState<any>([]);
+    const [data, setData] = useState<{meta: ResponseMetaType, rents: RentType[]}>();
     const [editRentId, setEditRentId] = useState<number | null>(null);
     const [form] = Form.useForm();
 
@@ -75,9 +77,8 @@ function Renters() {
         })
     }
 
-    const handleEditRent = (id: number) => {
-      const {phones, ...rest} = data.find((rent: RentType) => rent.id === id);
-      form.setFieldsValue(rest);
+    const handleEditRent = ({id, phones, ...rest}: RentType) => {
+       form.setFieldsValue(rest);
        form.setFieldValue('phone_1', phones[0])
        form.setFieldValue('phone_2', phones[1])
        setEditRentId(id);
@@ -113,10 +114,10 @@ function Renters() {
        form.resetFields();
     }
 
-    const getData = () => {
-        getRenters()
+    const getData = (page = 1) => {
+        getRenters(page)
         .then(res => {
-            setData(res.data.map((r) => ({...r, key: r.id})));
+            setData({meta: res.meta, rents: res.data});
         })
     }
 
@@ -124,11 +125,11 @@ function Renters() {
          <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Ижарачилар</h1>
             <Button type="primary" className='!bg-green-600 mb-2' icon={<i className='pi pi-plus' />} onClick={() => setOpenModal(true)}>Янги ижара яратиш</Button>
-            <Table<RentType> columns={columns?.concat({
+            <Table<RentType> pagination={{pageSize: TABLE_PAGE_SIZE, onChange: (page) => getData(page), total: data?.meta.total}} columns={columns?.concat({
                 key: "action",
                 render: (_, record) => <ColumnActions item={record} {...{handleCloseRent, handleEditRent, handleDeleteRent}}/>
               }
-            )} dataSource={data} key={1}/>
+            )} dataSource={data?.rents} key={1}/>
             <Modal isOpen={openModal} 
                    handleConfirm={handleConfirmModal} 
                    handleClose={handleCloseModal}>

@@ -2,16 +2,12 @@ import { useState } from 'react';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
 import { LOGO_SHORT, LOGO_TITLE, ROUTES_PATHS } from '../../utils/constants';
 import { Outlet, useNavigate } from 'react-router';
 
 const { Header, Sider, Content } = Layout;
-
 
 
 function MainLayout() {
@@ -67,6 +63,7 @@ function MainLayout() {
         <Content
           style={{
             margin: '24px 16px',
+            overflowY: 'auto',
             padding: 24,
             minHeight: 280,
             background: colorBgContainer,

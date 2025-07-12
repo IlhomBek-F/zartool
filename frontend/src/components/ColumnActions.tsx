@@ -4,7 +4,7 @@ import type { RentType } from "../core/models/renter-model";
 type ColumnActionsProps = {
     item: RentType;
     handleDeleteRent: (id: number) => void;
-    handleEditRent: (id: number) => void;
+    handleEditRent: (rent: RentType) => void;
     handleCloseRent: (id: number) => void;
 }
 
@@ -23,7 +23,7 @@ function ColumnActions({handleCloseRent, handleDeleteRent, handleEditRent, item}
             </Popconfirm>
         </Tooltip>
         <Tooltip title="Ижарани ўзгартириш">
-            <Button type="primary" disabled={!item.active} icon={<i className='pi pi-pencil' />} onClick={() => handleEditRent(item.id)}/>
+            <Button type="primary" disabled={!item.active} icon={<i className='pi pi-pencil' />} onClick={() => handleEditRent(item)}/>
         </Tooltip>
         <Tooltip title="Ижарани ёпиш">
             <Button type="primary" disabled={!item.active} className='!bg-green-600' icon={<i className='pi pi-lock' />} onClick={() => handleCloseRent(item.id)}/>

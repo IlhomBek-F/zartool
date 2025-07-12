@@ -8,7 +8,7 @@ export type BaseModel = {
 export type ResponseMetaType = {
     page: number,
     total: number,
-    per_page: number
+    per_page?: number
 }
 
 export type ResponseType<T = any> = {
