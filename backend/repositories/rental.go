@@ -68,35 +68,31 @@ func CompleteRental(db gorm.DB, rentalId uint) error {
 	return db.Model(&user).Update("active", false).Error
 }
 
-func GetRentalReport(db gorm.DB, page int, pageSize int) (models.RentalReport, error) {
+func GetRentalReport(db gorm.DB, page int, pageSize int) (models.RentalReport, models.MetaModel, error) {
 	var totalCompletedRent int64
 	var totalCreatedRent int64
 	var todayRents []models.User
+	var meta = models.MetaModel{Page: page}
 
 	totalCompletedRentResult := db.Model(&models.User{}).Where("active = ?", false).Count(&totalCompletedRent)
 
 	if totalCompletedRentResult.Error != nil {
-		return models.RentalReport{}, totalCompletedRentResult.Error
+		return models.RentalReport{}, meta, totalCompletedRentResult.Error
 	}
 
 	totalCreatedRentResult := db.Model(&models.User{}).Where("active = ?", true).Count(&totalCreatedRent)
 
 	if totalCreatedRentResult.Error != nil {
-		return models.RentalReport{}, totalCreatedRentResult.Error
+		return models.RentalReport{}, meta, totalCreatedRentResult.Error
 	}
 
-	startOfDay := time.Now().Truncate(24 * time.Hour)
-	endOfDay := startOfDay.Add(24 * time.Hour).Format("02-01-2006 15:04")
-	formatStartedDay := startOfDay.Format("02-01-2006 15:04")
+	rentsTotal, err := getTodayRents(db, &todayRents, page, pageSize)
 
-	todayRentsResult := db.Scopes(Paginate(page, pageSize)).
-		Preload("RentTools").
-		Where("date >= ? AND date < ?", formatStartedDay, endOfDay).
-		Find(&todayRents)
-
-	if todayRentsResult.Error != nil {
-		return models.RentalReport{}, todayRentsResult.Error
+	if err != nil {
+		return models.RentalReport{}, meta, err
 	}
+
+	meta.Total = rentsTotal
 
 	report := models.RentalReport{
 		Total_created_rent:   totalCreatedRent,
@@ -104,7 +100,7 @@ func GetRentalReport(db gorm.DB, page int, pageSize int) (models.RentalReport, e
 		Rents:                todayRents,
 	}
 
-	return report, nil
+	return report, meta, nil
 }
 
 func GetRentals(db gorm.DB, page int, pageSize int) ([]models.User, models.MetaModel, error) {
@@ -126,4 +122,28 @@ func GetRentals(db gorm.DB, page int, pageSize int) ([]models.User, models.MetaM
 	metaData.Total = count
 
 	return rentals, metaData, nil
+}
+
+func getTodayRents(db gorm.DB, todayRents *[]models.User, page int, pageSize int) (int64, error) {
+	var total int64
+	startOfDay := time.Now().Truncate(24 * time.Hour)
+	endOfDay := startOfDay.Add(24 * time.Hour).Format("02-01-2006 15:04")
+	formatStartOfdDay := startOfDay.Format("02-01-2006 15:04")
+
+	todayRentsTotalResult := db.Model(models.User{}).Where("date >= ? AND date < ?", formatStartOfdDay, endOfDay).Count(&total)
+
+	if todayRentsTotalResult.Error != nil {
+		return 0, todayRentsTotalResult.Error
+	}
+
+	todayRentsResult := db.Scopes(Paginate(page, pageSize)).
+		Preload("RentTools").
+		Where("date >= ? AND date < ?", formatStartOfdDay, endOfDay).
+		Find(&todayRents)
+
+	if todayRentsResult.Error != nil {
+		return 0, todayRentsResult.Error
+	}
+
+	return total, nil
 }
