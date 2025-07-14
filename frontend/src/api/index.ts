@@ -1,4 +1,5 @@
 import type { ResponseType } from "../core/models/base-model";
+import type { GetReportRentResponseType } from "../core/models/rent-report-model";
 import type { CreateRentToolRequestType, RentToolType, UpdateRentToolRequestType } from "../core/models/rent-tool-model";
 import type { CreateRentRequestType, RentType, UpdateRentRequestType } from "../core/models/renter-model";
 import { TABLE_PAGE_SIZE } from "../utils/constants";
@@ -14,6 +15,10 @@ export async function createRent(payload: CreateRentRequestType): Promise<Respon
 
 export async function getRenters(page = 1): Promise<ResponseType<RentType[]>> {
     return privateHttp.get("/rentals", {params: {page, page_size: TABLE_PAGE_SIZE}})
+}
+
+export async function getRentReport(page = 1): Promise<ResponseType<GetReportRentResponseType>> {
+    return privateHttp.get("/rentals/report")
 }
 
 export async function updateRent(payload: UpdateRentRequestType): Promise<ResponseType> {

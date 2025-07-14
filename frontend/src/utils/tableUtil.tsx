@@ -5,12 +5,15 @@ import { formatDate } from "./helper";
 import type { WarehouseToolType } from "../core/models/warehouse-tool-model";
 import { ColumnActions, type ColumnActionsProps } from "../components/ColumnActions";
 
-export const renterTableColumns = ({
-   handleDeleteRent,
-    handleEditRent,
-    handleCloseRent
-}: Omit<ColumnActionsProps, 'item'>) =>  [
-  {
+const actionColumns = ({handleCloseRent, handleEditRent, handleDeleteRent}: Omit<ColumnActionsProps, "item">) => {
+  return  {
+    key: "action",
+    render: (_: any, record: RentType) => <ColumnActions item={record} {...{handleCloseRent, handleEditRent, handleDeleteRent}}/>
+  }
+}
+
+const baseColumns = [
+    {
     title: 'Исм, фамилия',
     dataIndex: 'full_name',
     key: 'full_name',
@@ -24,9 +27,9 @@ export const renterTableColumns = ({
   },
   {
     title: 'Ижарага берилган нарсалар',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: (_, { rent_tools }: RentType) => (
+    key: 'rent_tools',
+    dataIndex: 'rent_tools',
+    render: (rent_tools: RentToolType[]) => (
       <>
         {rent_tools.map((tool: RentToolType, index: number) => {
           return (
@@ -42,7 +45,7 @@ export const renterTableColumns = ({
     title: 'Телефон',
     dataIndex: 'phone',
     key: 'phone',
-    render: (_, {phones, active}: RentType) => <span className={!active && 'line-through' || ''}>{phones[0]} {phones[1] && `| ${phones[1]}`}</span>,
+    render: (_: string[], {phones, active}: RentType) => <span className={!active && 'line-through' || ''}>{phones[0]} {phones[1] && `| ${phones[1]}`}</span>,
   },
   {
     title: 'Сана',
@@ -56,11 +59,14 @@ export const renterTableColumns = ({
     key: 'pre_payment',
     render: (text: string, record: RentType) => <span className={!record.active && 'line-through' || ''}>{text} сом</span>,
   },
-  {
-    key: "action",
-    render: (_: any, record: RentType) => <ColumnActions item={record} {...{handleCloseRent, handleEditRent, handleDeleteRent}}/>
-  }
+]
+
+export const renterTableColumns = (actionFns: Omit<ColumnActionsProps, 'item'>) => [
+  ...baseColumns,
+  actionColumns(actionFns)
 ];
+
+export const reportTableColumns = baseColumns
 
 export const warehouseTableColumns = (
   handleEditTool: (tool: WarehouseToolType) => void, 
@@ -77,7 +83,7 @@ export const warehouseTableColumns = (
         },
         {
             key: 'action',
-            render: (_, tool: WarehouseToolType) => (
+            render: (_: any, tool: WarehouseToolType) => (
                 <Flex justify="end" gap={10}>
                     <Tooltip title="Ускунани ўзгартириш">
                         <Button type="primary" icon={<i className='pi pi-pencil' />} onClick={() => handleEditTool(tool)}/>
