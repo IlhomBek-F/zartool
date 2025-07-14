@@ -76,7 +76,7 @@ func GetRentals(db gorm.DB, page int, pageSize int) ([]models.User, models.MetaM
 		return nil, metaData, countResult.Error
 	}
 
-	result := db.Scopes(Paginate(page, pageSize)).Preload("RentTools").Find(&rentals)
+	result := db.Scopes(Paginate(page, pageSize)).Preload("RentTools").Order("created_at DESC").Find(&rentals)
 
 	if result.Error != nil {
 		return nil, metaData, result.Error

@@ -1,10 +1,11 @@
-import { Button, Flex, Form, Input, Popconfirm, Table, Tooltip, type TableProps } from "antd";
+import { Button, Flex, Form, Input, Table} from "antd";
 import { Modal } from "../shared/Modal";
 import { useEffect, useState } from "react";
 import { addNewTool, deleteTool, getRentTools, updateTool } from "../api";
 import type { WarehouseToolType } from "../core/models/warehouse-tool-model";
 import type { ResponseMetaType } from "../core/models/base-model";
 import { TABLE_PAGE_SIZE } from "../utils/constants";
+import { warehouseTableColumns } from "../utils/tableUtil";
 
 const formItemLayout = {
   labelCol: {
@@ -61,38 +62,6 @@ function Setting() {
        setOpenModal(true);
     }
 
-    const columns: TableProps<WarehouseToolType>['columns'] = [
-        {
-            title: 'Ускуна',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Размер',
-            dataIndex: 'size',
-            key: 'size',
-        },
-        {
-            key: 'action',
-            render: (_, tool) => (
-                <Flex justify="end" gap={10}>
-                    <Tooltip title="Ускунани ўзгартириш">
-                        <Button type="primary" icon={<i className='pi pi-pencil' />} onClick={() => handleEditTool(tool)}/>
-                     </Tooltip>
-                    <Tooltip title="Ускунани ўчириш">
-                        <Popconfirm placement="topLeft"
-                                    title={'Ҳақиқатдан ҳам ўчирилсинми ?'}
-                                    okText="Ҳа"
-                                    onConfirm={() => handleDeleteTool(tool.id)}
-                                    cancelText="Йўқ">
-                        <Button type="primary" danger icon={<i className='pi pi-trash' />} />
-                       </Popconfirm>
-                    </Tooltip>
-                </Flex>
-            ),
-        },
-    ];
-
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Омбор/Склад</h1>
@@ -105,7 +74,7 @@ function Setting() {
                                       pageSize: TABLE_PAGE_SIZE, 
                                       onChange: (page: number) => getTools(page), 
                                       total: dataSource?.meta.total}} 
-                                      columns={columns} 
+                                      columns={warehouseTableColumns(handleEditTool, handleDeleteTool)} 
                                       dataSource={dataSource?.data} />
             <Modal isOpen={openModal} 
                    handleClose={() => setOpenModal(false)} 

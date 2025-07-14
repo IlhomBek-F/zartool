@@ -17,7 +17,7 @@ export async function getRenters(page = 1): Promise<ResponseType<RentType[]>> {
 }
 
 export async function updateRent(payload: UpdateRentRequestType): Promise<ResponseType> {
-    return privateHttp.put("/rental/update", payload)
+    return privateHttp.patch("/rental/update", payload)
 }
 
 export async function deleteRent(id: number): Promise<ResponseType> {

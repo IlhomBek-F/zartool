@@ -21,7 +21,7 @@ func GetWareHouseTools(db gorm.DB, page int, pageSize int) ([]models.WarehouseTo
 		return nil, metaData, countResult.Error
 	}
 
-	result := db.Scopes(Paginate(page, pageSize)).Find(&warehouseTools)
+	result := db.Scopes(Paginate(page, pageSize)).Order("created_at DESC").Find(&warehouseTools)
 
 	metaData.Page = page
 	metaData.Total = count

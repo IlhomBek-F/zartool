@@ -1,7 +1,7 @@
 import { Flex, Tooltip, Popconfirm, Button } from "antd";
 import type { RentType } from "../core/models/renter-model";
 
-type ColumnActionsProps = {
+export type ColumnActionsProps = {
     item: RentType;
     handleDeleteRent: (id: number) => void;
     handleEditRent: (rent: RentType) => void;
