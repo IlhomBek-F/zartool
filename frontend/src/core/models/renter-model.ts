@@ -7,6 +7,7 @@ export type RentType = BaseModel & {
     rent_tools: RentToolType[],
     phones: string[],
     pre_payment: string,
+    date: string,
     active: boolean
 }
 

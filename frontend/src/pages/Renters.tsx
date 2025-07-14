@@ -8,6 +8,7 @@ import type { RentToolType } from '../core/models/rent-tool-model';
 import type { ResponseMetaType } from '../core/models/base-model';
 import { TABLE_PAGE_SIZE } from '../utils/constants';
 import { renterTableColumns } from '../utils/tableUtil';
+import dayjs from 'dayjs';
 
 function Renters() {
     const [openModal, setOpenModal] = useState(false);
@@ -26,11 +27,12 @@ function Renters() {
         })
     }
 
-    const handleEditRent = ({id, phones, ...rest}: RentType) => {
+    const handleEditRent = ({id, phones, date, ...rest}: RentType) => {
        form.setFieldsValue(rest);
        form.setFieldValue('phone_1', phones[0])
        form.setFieldValue('phone_2', phones[1])
-       setEditRent({id, phones, ...rest});
+       form.setFieldValue('date', dayjs(date, "DD-MM-YYYY"))
+       setEditRent({id, phones,date, ...rest});
        setOpenModal(true);
     }
 
@@ -44,7 +46,12 @@ function Renters() {
     const handleConfirmModal = async () => {
         const {phone_1, phone_2, date, rent_tools, ...rest} = await form.validateFields();
         const toolQuantityToNumber = rent_tools.map((tool: RentToolType) => ({...tool, quantity: +tool.quantity}))
-        const rent = {phones: [phone_1, phone_2], ...rest, rent_tools: toolQuantityToNumber, pre_payment: +rest.pre_payment};
+        const rent = {phones: 
+                      [phone_1, phone_2], 
+                      ...rest, 
+                      rent_tools: toolQuantityToNumber, 
+                      pre_payment: +rest.pre_payment, 
+                      date: `${dayjs(date).format("DD-MM-YYYY")} ${dayjs(new Date()).format("HH:mm")}`};
         
         if(editableRent) {
           await updateRent({id: editableRent.id, ...rent, active: true, created_at: editableRent.created_at});
@@ -59,7 +66,8 @@ function Renters() {
     }
 
     const handleCloseModal = () => {
-       setOpenModal(false)
+       setOpenModal(false);
+       setEditRent(null);
        form.resetFields();
     }
 

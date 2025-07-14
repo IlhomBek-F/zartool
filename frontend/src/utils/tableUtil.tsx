@@ -1,7 +1,6 @@
-import { Button, Flex, Popconfirm, Tag, Tooltip, type TableProps } from "antd"
+import { Button, Flex, Popconfirm, Tag, Tooltip } from "antd"
 import type { RentType } from "../core/models/renter-model"
 import type { RentToolType } from "../core/models/rent-tool-model";
-import { formatDate } from "./helper";
 import type { WarehouseToolType } from "../core/models/warehouse-tool-model";
 import { ColumnActions, type ColumnActionsProps } from "../components/ColumnActions";
 
@@ -49,9 +48,8 @@ const baseColumns = [
   },
   {
     title: 'Сана',
-    dataIndex: 'created_at',
-    key: 'created_at',
-    render: (value: string) => <span>{formatDate(value)}</span>
+    dataIndex: 'date',
+    key: 'date',
   },
   {
     title: 'Бошлангич тўлов',

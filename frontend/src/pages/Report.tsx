@@ -51,12 +51,12 @@ function Report() {
             <Space direction='horizontal' className='mb-4'>
                <Search placeholder="input search text" allowClear style={{ width: 200 }} />
             </Space>
-            {/* <Table<RentType> pagination={{
+            <Table<RentType> pagination={{
                              pageSize: TABLE_PAGE_SIZE, 
                              onChange: (page) => getData(page), 
                              total: report?.meta.total}} 
                              columns={reportTableColumns} 
-                             dataSource={report?.reportData.reports} key={1}/> */}
+                             dataSource={report?.reportData.rents} key={1}/>
         </div>
     );
 }

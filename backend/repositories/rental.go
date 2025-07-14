@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"time"
 	"zartool/models"
 
 	"gorm.io/gorm"
@@ -70,6 +71,7 @@ func CompleteRental(db gorm.DB, rentalId uint) error {
 func GetRentalReport(db gorm.DB, page int, pageSize int) (models.RentalReport, error) {
 	var totalCompletedRent int64
 	var totalCreatedRent int64
+	var todayRents []models.User
 
 	totalCompletedRentResult := db.Model(&models.User{}).Where("active = ?", false).Count(&totalCompletedRent)
 
@@ -83,9 +85,23 @@ func GetRentalReport(db gorm.DB, page int, pageSize int) (models.RentalReport, e
 		return models.RentalReport{}, totalCreatedRentResult.Error
 	}
 
+	startOfDay := time.Now().Truncate(24 * time.Hour)
+	endOfDay := startOfDay.Add(24 * time.Hour).Format("02-01-2006 15:04")
+	formatStartedDay := startOfDay.Format("02-01-2006 15:04")
+
+	todayRentsResult := db.Scopes(Paginate(page, pageSize)).
+		Preload("RentTools").
+		Where("date >= ? AND date < ?", formatStartedDay, endOfDay).
+		Find(&todayRents)
+
+	if todayRentsResult.Error != nil {
+		return models.RentalReport{}, todayRentsResult.Error
+	}
+
 	report := models.RentalReport{
 		Total_created_rent:   totalCreatedRent,
 		Total_completed_rent: totalCompletedRent,
+		Rents:                todayRents,
 	}
 
 	return report, nil

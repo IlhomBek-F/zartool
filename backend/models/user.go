@@ -7,5 +7,6 @@ type User struct {
 	Pre_payment uint        `json:"pre_payment"`
 	Active      bool        `gorm:"default:true" json:"active"`
 	Phones      []string    `gorm:"serializer:json" json:"phones"`
+	Date        string      `json:"date"`
 	RentTools   []RentTools `json:"rent_tools"`
 }
