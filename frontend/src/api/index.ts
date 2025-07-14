@@ -18,7 +18,7 @@ export async function getRenters(page = 1): Promise<ResponseType<RentType[]>> {
 }
 
 export async function getRentReport(page = 1): Promise<ResponseType<GetReportRentResponseType>> {
-    return privateHttp.get("/rentals/report")
+    return privateHttp.get("/rental/report", {params: {page, page_size: TABLE_PAGE_SIZE}})
 }
 
 export async function updateRent(payload: UpdateRentRequestType): Promise<ResponseType> {

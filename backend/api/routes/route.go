@@ -45,6 +45,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		protectedRoute.PATCH("/rental/update", server.UpdateRental)
 		protectedRoute.DELETE("/rental/delete/:id", server.DeleteRental)
 		protectedRoute.POST("/rental/complete/:id", server.CompleteRental)
+		protectedRoute.GET("/rental/report", server.GetRentalReport)
 		protectedRoute.GET("/rentals", server.GetRentals)
 	}
 

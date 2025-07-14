@@ -67,6 +67,30 @@ func CompleteRental(db gorm.DB, rentalId uint) error {
 	return db.Model(&user).Update("active", false).Error
 }
 
+func GetRentalReport(db gorm.DB, page int, pageSize int) (models.RentalReport, error) {
+	var totalCompletedRent int64
+	var totalCreatedRent int64
+
+	totalCompletedRentResult := db.Model(&models.User{}).Where("active = ?", false).Count(&totalCompletedRent)
+
+	if totalCompletedRentResult.Error != nil {
+		return models.RentalReport{}, totalCompletedRentResult.Error
+	}
+
+	totalCreatedRentResult := db.Model(&models.User{}).Where("active = ?", true).Count(&totalCreatedRent)
+
+	if totalCreatedRentResult.Error != nil {
+		return models.RentalReport{}, totalCreatedRentResult.Error
+	}
+
+	report := models.RentalReport{
+		Total_created_rent:   totalCreatedRent,
+		Total_completed_rent: totalCompletedRent,
+	}
+
+	return report, nil
+}
+
 func GetRentals(db gorm.DB, page int, pageSize int) ([]models.User, models.MetaModel, error) {
 	var rentals []models.User
 	var count int64

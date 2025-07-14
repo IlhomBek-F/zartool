@@ -92,6 +92,27 @@ func (c Controller) CompleteRental(e echo.Context) error {
 	return e.JSON(http.StatusOK, resp)
 }
 
+func (c Controller) GetRentalReport(e echo.Context) error {
+	var queryMap url.Values = e.QueryParams()
+
+	page, _ := strconv.Atoi(queryMap.Get("page"))
+	pageSize, _ := strconv.Atoi(queryMap.Get("page_size"))
+
+	reportData, err := repositories.GetRentalReport(c.DB, page, pageSize)
+
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+	}
+
+	resp := models.SuccessResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+		Data:    reportData,
+	}
+
+	return e.JSON(http.StatusOK, resp)
+}
+
 func (c Controller) GetRentals(e echo.Context) error {
 	var queryMap url.Values = e.QueryParams()
 

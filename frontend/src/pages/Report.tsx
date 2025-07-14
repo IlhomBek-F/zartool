@@ -32,7 +32,7 @@ function Report() {
               <Col span={12}>
                 <Card variant="outlined">
                     <Statistic title="Умумий берилган ижаралар"
-                               value={report?.reportData.total_active_rent}
+                               value={report?.reportData.total_created_rent}
                                valueStyle={{ color: '#3f8600' }}
                                prefix={<i className='pi pi-address-book mr-2' />}
                     />
@@ -51,12 +51,12 @@ function Report() {
             <Space direction='horizontal' className='mb-4'>
                <Search placeholder="input search text" allowClear style={{ width: 200 }} />
             </Space>
-            <Table<RentType> pagination={{
+            {/* <Table<RentType> pagination={{
                              pageSize: TABLE_PAGE_SIZE, 
                              onChange: (page) => getData(page), 
                              total: report?.meta.total}} 
                              columns={reportTableColumns} 
-                             dataSource={report?.reportData.reports} key={1}/>
+                             dataSource={report?.reportData.reports} key={1}/> */}
         </div>
     );
 }
