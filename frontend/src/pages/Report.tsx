@@ -5,24 +5,35 @@ import type { RentType } from '../core/models/renter-model';
 import { TABLE_PAGE_SIZE } from '../utils/constants';
 import { reportTableColumns } from '../utils/tableUtil';
 import { getRentReport } from '../api';
-import { useEffect, useState } from 'react';
-import type { ResponseMetaType } from '../core/models/base-model';
+import { useEffect, useRef, useState } from 'react';
+import type { Query, ResponseMetaType } from '../core/models/base-model';
 import type { RentReport } from '../core/models/rent-report-model';
 
 const { Search } = Input;
 
 function Report() {
   const [report, setData] = useState<{meta: ResponseMetaType, reportData: RentReport}>();
-
+  const queryRef = useRef<Query>({page: 1, q: '', page_size: TABLE_PAGE_SIZE})
   useEffect(() => {
       getData()
   }, [])
  
-  const getData = (page = 1) => {
-          getRentReport(page)
+  const getData = () => {
+          getRentReport(queryRef.current)
           .then(({meta, data}) => {
               setData({meta: meta, reportData: data});
           })
+  }
+
+  const handleSearch = (q: string) => {
+    queryRef.current.page = 1;
+    queryRef.current.q = q;
+    getData()
+  }
+
+  const handlePageChange = (page: number) => {
+    queryRef.current.page = page
+    getData()
   }
 
     return (
@@ -49,11 +60,11 @@ function Report() {
             </Col>
             </Row>
             <Space direction='horizontal' className='mb-4'>
-               <Search placeholder="input search text" allowClear style={{ width: 200 }} />
+               <Search placeholder="input search text" allowClear style={{ width: 200 }} onChange={(e) => handleSearch(e.target.value)}/>
             </Space>
             <Table<RentType> pagination={{
                              pageSize: TABLE_PAGE_SIZE, 
-                             onChange: (page) => getData(page), 
+                             onChange: handlePageChange, 
                              total: report?.meta.total}} 
                              columns={reportTableColumns} 
                              dataSource={report?.reportData.rents} key={1}/>

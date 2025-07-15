@@ -97,8 +97,9 @@ func (c Controller) GetRentalReport(e echo.Context) error {
 
 	page, _ := strconv.Atoi(queryMap.Get("page"))
 	pageSize, _ := strconv.Atoi(queryMap.Get("page_size"))
+	queryTerm := queryMap.Get("q")
 
-	reportData, meta, err := repositories.GetRentalReport(c.DB, page, pageSize)
+	reportData, meta, err := repositories.GetRentalReport(c.DB, page, pageSize, queryTerm)
 
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
@@ -119,8 +120,9 @@ func (c Controller) GetRentals(e echo.Context) error {
 
 	page, _ := strconv.Atoi(queryMap.Get("page"))
 	pageSize, _ := strconv.Atoi(queryMap.Get("page_size"))
+	queryTerm := queryMap.Get("q")
 
-	rentals, metaData, err := repositories.GetRentals(c.DB, page, pageSize)
+	rentals, metaData, err := repositories.GetRentals(c.DB, page, pageSize, queryTerm)
 
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Interna; server error"})

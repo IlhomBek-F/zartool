@@ -1,6 +1,6 @@
-import { Button, Form, Table } from 'antd';
+import { Button, Form, Input, Space, Table } from 'antd';
 import { Modal } from '../shared/Modal';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RentForm } from '../components/RentForm';
 import { completeRent, createRent, deleteRent, getRenters, updateRent } from '../api';
 import type { RentType } from '../core/models/renter-model';
@@ -10,10 +10,13 @@ import { TABLE_PAGE_SIZE } from '../utils/constants';
 import { renterTableColumns } from '../utils/tableUtil';
 import dayjs from 'dayjs';
 
+const { Search } = Input;
+
 function Renters() {
     const [openModal, setOpenModal] = useState(false);
     const [data, setData] = useState<{meta: ResponseMetaType, rents: RentType[]}>();
     const [editableRent, setEditRent] = useState<RentType | null>(null);
+    const queryRef = useRef({page: 1, q: '', page_size: TABLE_PAGE_SIZE});
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -71,20 +74,34 @@ function Renters() {
        form.resetFields();
     }
 
-    const getData = (page = 1) => {
-        getRenters(page)
+    const getData = () => {
+        getRenters(queryRef.current)
         .then(({meta, data}) => {
             setData({meta: meta, rents: data.map((r) => ({...r, key: r.id}))});
         })
     }
 
+    const handleSearchChange = (e) => {
+      queryRef.current.page = 1;
+      queryRef.current.q = e.target.value;
+      getData();
+    }
+
+    const handlePageChange = (page: number) => {
+      queryRef.current.page = page;
+      getData()
+    }
+
     return (
          <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Ижарачилар</h1>
-            <Button type="primary" className='!bg-green-600 mb-2' icon={<i className='pi pi-plus' />} onClick={() => setOpenModal(true)}>Янги ижара яратиш</Button>
+             <Space direction='horizontal' className='mb-4'>
+               <Button type="primary" className='!bg-green-600' icon={<i className='pi pi-plus' />} onClick={() => setOpenModal(true)}>Янги ижара яратиш</Button>
+               <Search placeholder="Исм, фамилия, Телефон" allowClear onChange={handleSearchChange} style={{ width: 200 }} />
+            </Space>
             <Table<RentType> pagination={{
                              pageSize: TABLE_PAGE_SIZE, 
-                             onChange: (page) => getData(page), 
+                             onChange: (page) => handlePageChange(page), 
                              total: data?.meta.total}} 
                              columns={renterTableColumns({handleDeleteRent, handleEditRent, handleCloseRent})} 
                              dataSource={data?.rents} key={1}/>

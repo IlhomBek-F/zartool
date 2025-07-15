@@ -17,3 +17,9 @@ export type ResponseType<T = any> = {
     data: T;
     meta: ResponseMetaType
 }
+
+export type Query = {
+    page: number;
+    page_size: number;
+    q: string;
+}
