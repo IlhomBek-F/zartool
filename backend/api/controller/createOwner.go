@@ -9,6 +9,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Create owner godoc
+//
+//	@Summary        Create owner
+//	@Description    Create new owner
+//	@Tags           zartool
+//	@Accept         json
+//	@Produce        json
+//	@Security       JWT
+//	@Param          owner  body models.Owners  true    "Owner payload"
+//	@Success        200 {object} models.SuccessResponse
+//	@Router         /create-owner [post]
 func (s *Controller) CreateOwner(e echo.Context) error {
 	var newOwner models.Owners
 

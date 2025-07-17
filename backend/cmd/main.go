@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	_ "zartool/docs"
 	"zartool/internal/database"
 )
 
@@ -36,6 +37,19 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	done <- true
 }
 
+// Swagger
+//
+//	@title                       Zartool API
+//	@version                     1.0
+//	@description                 A comprehensive API for managing constructional renting struff, offering endpoints for creation, update, deletion, and retrieval of data.
+//	@license.url                 http://www.apache.org/licenses/LICENSE-2.0.html
+//	@host                        localhost:3001
+//	@BasePath                    /api/
+//	@schemes                     http https
+//	@securityDefinitions.apiKey  JWT
+//	@in                          header
+//	@name                        Authorization
+//	@description                 JWT security accessToken. Please add it in the format "Bearer {AccessToken}" to authorize your requests.
 func main() {
 	server := database.InitServer()
 

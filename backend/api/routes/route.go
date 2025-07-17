@@ -5,6 +5,8 @@ import (
 	"os"
 	"zartool/api/controller"
 
+	echoSwagger "github.com/swaggo/echo-swagger"
+
 	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -33,6 +35,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		DB: *s.DB,
 	}
 
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
 
 	{

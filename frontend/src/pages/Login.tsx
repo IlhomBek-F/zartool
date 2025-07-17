@@ -12,9 +12,9 @@ function Login() {
 
     const _login = async () => {
         const credential = await form.validateFields();
-        const {username , password} = credential;
+        const {login: userLogin , password} = credential;
         
-        login(username, password)
+        login(userLogin, password)
         .then(({data}) => {
             setToken(data.access_token);
             navigate(`/${ROUTES_PATHS.RENTERS}`);

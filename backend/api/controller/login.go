@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	_ "zartool/docs"
 	"zartool/internal"
 	"zartool/models"
 	"zartool/repositories"
@@ -17,6 +18,17 @@ type Controller struct {
 	DB gorm.DB
 }
 
+// Login godoc
+//
+//	@Summary        Login
+//	@Description    Login to app
+//	@Tags           zartool
+//	@Accept         json
+//	@Produce        json
+//	@Security       JWT
+//	@Param          credential  body models.Owners  true    "Owner credential"
+//	@Success        200 {object} models.SuccessResponse
+//	@Router         /auth/login [post]
 func (s Controller) Login(e echo.Context) error {
 	var ownerCredential models.Owners
 

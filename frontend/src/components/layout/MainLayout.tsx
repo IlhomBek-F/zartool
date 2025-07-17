@@ -3,9 +3,10 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
+import { Button, Flex, Layout, Menu, theme } from 'antd';
 import { LOGO_SHORT, LOGO_TITLE, ROUTES_PATHS } from '../../utils/constants';
 import { Outlet, useNavigate } from 'react-router';
+import { clearToken } from '../../utils/tokenUtil';
 
 const { Header, Sider, Content } = Layout;
 
@@ -14,6 +15,11 @@ function MainLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const { token: { colorBgContainer, borderRadiusLG }} = theme.useToken();
   const navigate = useNavigate();
+  
+  const logout = () => {
+     clearToken()
+     navigate(ROUTES_PATHS.LOGIN)
+  }
 
   const menuItems = [
    {
@@ -49,16 +55,21 @@ function MainLayout() {
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Flex align='center' justify='space-between' className='w-full'>
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-            }}
+            className='!text-[16px] !size-16'
           />
+          <Button
+            type="text"
+            icon={<i className='pi pi-sign-out cursor-pointer '></i>}
+            onClick={logout}
+            className='!text-[16px] !size-16'
+          />
+          </Flex>
+          
         </Header>
         <Content
           style={{

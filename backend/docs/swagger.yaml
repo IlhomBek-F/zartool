@@ -1,0 +1,92 @@
+basePath: /api/
+definitions:
+  models.MetaModel:
+    properties:
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  models.Owners:
+    type: object
+  models.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/models.MetaModel'
+      status:
+        type: integer
+    type: object
+host: localhost:3001
+info:
+  contact: {}
+  description: A comprehensive API for managing constructional renting struff, offering
+    endpoints for creation, update, deletion, and retrieval of data.
+  license:
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Zartool API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login to app
+      parameters:
+      - description: Owner credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/models.Owners'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+      security:
+      - JWT: []
+      summary: Login
+      tags:
+      - zartool
+  /create-owner:
+    post:
+      consumes:
+      - application/json
+      description: Create new owner
+      parameters:
+      - description: Owner payload
+        in: body
+        name: owner
+        required: true
+        schema:
+          $ref: '#/definitions/models.Owners'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+      security:
+      - JWT: []
+      summary: Create owner
+      tags:
+      - zartool
+schemes:
+- http
+- https
+securityDefinitions:
+  JWT:
+    description: JWT security accessToken. Please add it in the format "Bearer {AccessToken}"
+      to authorize your requests.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
