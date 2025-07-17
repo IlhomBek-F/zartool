@@ -26,7 +26,6 @@ type Controller struct {
 //	@Accept         json
 //	@Produce        json
 //	@Param          credential  body models.Owners  true    "Owner credential"
-//	@Success        200 {object} models.SuccessResponse
 //	@Router         /auth/login [post]
 func (s Controller) Login(e echo.Context) error {
 	var ownerCredential models.Owners
@@ -53,7 +52,7 @@ func (s Controller) Login(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	resp := models.SuccessResponse{
+	resp := models.SuccessResponse[any]{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data: map[string]any{

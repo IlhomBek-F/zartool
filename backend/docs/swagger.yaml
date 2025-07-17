@@ -11,15 +11,58 @@ definitions:
     type: object
   models.Owners:
     type: object
-  models.SuccessResponse:
+  models.RentTools:
     properties:
-      data: {}
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      quantity:
+        type: integer
+      size:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.RentalsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.User'
       message:
         type: string
       meta:
         $ref: '#/definitions/models.MetaModel'
       status:
         type: integer
+    type: object
+  models.User:
+    properties:
+      active:
+        type: boolean
+      address:
+        type: string
+      created_at:
+        type: string
+      date:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      phones:
+        items:
+          type: string
+        type: array
+      pre_payment:
+        type: integer
+      rent_tools:
+        items:
+          $ref: '#/definitions/models.RentTools'
+        type: array
+      updated_at:
+        type: string
     type: object
 host: localhost:3001
 info:
@@ -45,11 +88,7 @@ paths:
           $ref: '#/definitions/models.Owners'
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.SuccessResponse'
+      responses: {}
       summary: Login
       tags:
       - zartool
@@ -67,14 +106,140 @@ paths:
           $ref: '#/definitions/models.Owners'
       produces:
       - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Create owner
+      tags:
+      - zartool
+  /rental/complete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Complete rental
+      parameters:
+      - description: rental id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Complete rental
+      tags:
+      - zartool
+  /rental/create:
+    post:
+      consumes:
+      - application/json
+      description: Create new rental
+      parameters:
+      - description: Create new rental
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Create new rental
+      tags:
+      - zartool
+  /rental/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete rental
+      parameters:
+      - description: rental id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Delete rental
+      tags:
+      - zartool
+  /rental/report:
+    get:
+      consumes:
+      - application/json
+      description: Rental  report
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: page_size
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SuccessResponse'
+            $ref: '#/definitions/models.RentalsResponse'
       security:
       - JWT: []
-      summary: Create owner
+      summary: Rental report
+      tags:
+      - zartool
+  /rental/update:
+    put:
+      consumes:
+      - application/json
+      description: Update rental
+      parameters:
+      - description: Update rental
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Update rental
+      tags:
+      - zartool
+  /rentals:
+    get:
+      consumes:
+      - application/json
+      description: Get rental list
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: page_size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RentalsResponse'
+      security:
+      - JWT: []
+      summary: Get rental list
       tags:
       - zartool
 schemes:

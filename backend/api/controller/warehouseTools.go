@@ -22,7 +22,7 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	resp := models.SuccessResponse{
+	resp := models.SuccessResponse[[]models.WarehouseTools]{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    tools,
@@ -45,7 +45,7 @@ func (s Controller) AddNewTools(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse{
+	resp := models.SuccessResponse[[]models.WarehouseTools]{
 		Status:  http.StatusCreated,
 		Message: "Succes",
 		Data:    newTool,
@@ -67,7 +67,7 @@ func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse{
+	resp := models.SuccessResponse[models.WarehouseTools]{
 		Status:  http.StatusOK,
 		Message: "Success",
 	}
@@ -88,7 +88,7 @@ func (c Controller) UpdateWareHouseTool(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse{
+	resp := models.SuccessResponse[models.WarehouseTools]{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    tool,

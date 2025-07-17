@@ -10,3 +10,5 @@ type User struct {
 	Date        string      `json:"date"`
 	RentTools   []RentTools `json:"rent_tools"`
 }
+
+type RentalsResponse = SuccessResponse[User]
