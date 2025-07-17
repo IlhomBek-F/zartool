@@ -50,8 +50,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.SuccessResponse'
-      security:
-      - JWT: []
       summary: Login
       tags:
       - zartool

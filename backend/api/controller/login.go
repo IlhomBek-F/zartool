@@ -25,7 +25,6 @@ type Controller struct {
 //	@Tags           zartool
 //	@Accept         json
 //	@Produce        json
-//	@Security       JWT
 //	@Param          credential  body models.Owners  true    "Owner credential"
 //	@Success        200 {object} models.SuccessResponse
 //	@Router         /auth/login [post]

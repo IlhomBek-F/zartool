@@ -20,11 +20,6 @@ const docTemplate = `{
     "paths": {
         "/auth/login": {
             "post": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
                 "description": "Login to app",
                 "consumes": [
                     "application/json"
