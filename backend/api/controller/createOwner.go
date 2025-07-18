@@ -17,7 +17,8 @@ import (
 //	@Accept         json
 //	@Produce        json
 //	@Security       JWT
-//	@Param          owner  body models.Owners  true    "Owner payload"
+//	@Param          owner  body models.Owners true  "Owner payload"
+//  @Success        200 {object} models.SuccessResponse
 //	@Router         /create-owner [post]
 func (s *Controller) CreateOwner(e echo.Context) error {
 	var newOwner models.Owners
@@ -43,7 +44,7 @@ func (s *Controller) CreateOwner(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	resp := models.SuccessResponse[models.Owners]{
+	resp := models.SuccessResponse{
 		Status:  http.StatusCreated,
 		Message: "Success",
 	}

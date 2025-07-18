@@ -10,6 +10,18 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// GetWareHouseTools godoc
+//
+//	@Summary        GetWareHouseTools
+//	@Description    GetWareHouseTools
+//	@Tags           zartool
+//	@Accept         json
+//	@Produce        json
+//	@Security       JWT
+//	@Param          page query int false "page"
+//	@Param          page_size query int false "page_size"
+//  @Success        200 {object} models.WarehouseToolsResponse
+//	@Router         /warehouse-tools [get]
 func (s *Controller) GetWareHouseTools(e echo.Context) error {
 	var queries url.Values = e.QueryParams()
 
@@ -22,7 +34,7 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	resp := models.SuccessResponse[[]models.WarehouseTools]{
+	resp := models.WarehouseToolsResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    tools,
@@ -32,6 +44,16 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 	return e.JSON(http.StatusOK, resp)
 }
 
+// AddNewTools godoc
+//	@Summary        AddNewTools
+//	@Description    AddNewTools
+//	@Tags           zartool
+//	@Accept         json
+//	@Produce        json
+//	@Security       JWT
+//	@Param          payload body models.WarehouseTools false "body"
+//  @Success        200 {object} models.WarehouseToolsCreateResponse
+//	@Router         /warehouse-tool/create [post]
 func (s Controller) AddNewTools(e echo.Context) error {
 	var newTool []models.WarehouseTools
 
@@ -45,7 +67,7 @@ func (s Controller) AddNewTools(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse[[]models.WarehouseTools]{
+	resp := models.WarehouseToolsCreateResponse{
 		Status:  http.StatusCreated,
 		Message: "Succes",
 		Data:    newTool,
@@ -54,6 +76,16 @@ func (s Controller) AddNewTools(e echo.Context) error {
 	return e.JSON(http.StatusCreated, resp)
 }
 
+// DeleteWarehouseTool godoc
+//	@Summary        DeleteWarehouseTool
+//	@Description    DeleteWarehouseTool
+//	@Tags           zartool
+//	@Accept         json
+//	@Produce        json
+//	@Security       JWT
+//	@Param          id path int true "id"
+//  @Success        200 {object} models.SuccessResponse
+//	@Router         /warehouse-tool/delete/{id} [delete]
 func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
@@ -67,7 +99,7 @@ func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse[models.WarehouseTools]{
+	resp := models.SuccessResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 	}
@@ -75,6 +107,16 @@ func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 	return e.JSON(http.StatusOK, resp)
 }
 
+// UpdateWareHouseTool godoc
+//	@Summary        UpdateWareHouseTool
+//	@Description    UpdateWareHouseTool
+//	@Tags           zartool
+//	@Accept         json
+//	@Produce        json
+//	@Security       JWT
+//	@Param          payload body models.WarehouseToolsUpdateResponse true "payload"
+//  @Success        200 {object} models.SuccessResponse
+//	@Router         /warehouse-tool/update/{id} [put]
 func (c Controller) UpdateWareHouseTool(e echo.Context) error {
 	var tool models.WarehouseTools
 
@@ -88,7 +130,7 @@ func (c Controller) UpdateWareHouseTool(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse[models.WarehouseTools]{
+	resp := models.WarehouseToolsUpdateResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    tool,

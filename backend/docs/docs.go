@@ -42,7 +42,14 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OwnerResponse"
+                        }
+                    }
+                }
             }
         },
         "/create-owner": {
@@ -74,7 +81,14 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SuccessResponse"
+                        }
+                    }
+                }
             }
         },
         "/rental/complete/{id}": {
@@ -104,7 +118,14 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SuccessResponse"
+                        }
+                    }
+                }
             }
         },
         "/rental/create": {
@@ -136,7 +157,14 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SuccessResponse"
+                        }
+                    }
+                }
             }
         },
         "/rental/delete/{id}": {
@@ -197,7 +225,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "page_size",
-                        "name": "page",
+                        "name": "page_size",
                         "in": "query"
                     }
                 ],
@@ -205,7 +233,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.RentalsResponse"
+                            "$ref": "#/definitions/models.SuccessRentalResponse"
                         }
                     }
                 }
@@ -240,7 +268,14 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateRentalResponse"
+                        }
+                    }
+                }
             }
         },
         "/rentals": {
@@ -279,7 +314,163 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.RentalsResponse"
+                            "$ref": "#/definitions/models.RentalListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse-tool/create": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "AddNewTools",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zartool"
+                ],
+                "summary": "AddNewTools",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "payload",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.WarehouseTools"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.WarehouseToolsCreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse-tool/delete/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "DeleteWarehouseTool",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zartool"
+                ],
+                "summary": "DeleteWarehouseTool",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse-tool/update/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "UpdateWareHouseTool",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zartool"
+                ],
+                "summary": "UpdateWareHouseTool",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.WarehouseToolsUpdateResponse"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse-tools": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "GetWareHouseTools",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zartool"
+                ],
+                "summary": "GetWareHouseTools",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page_size",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.WarehouseToolsResponse"
                         }
                     }
                 }
@@ -287,6 +478,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Credential": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.MetaModel": {
             "type": "object",
             "properties": {
@@ -301,8 +506,39 @@ const docTemplate = `{
                 }
             }
         },
+        "models.OwnerResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.Credential"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Owners": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
         },
         "models.RentTools": {
             "type": "object",
@@ -327,7 +563,72 @@ const docTemplate = `{
                 }
             }
         },
-        "models.RentalsResponse": {
+        "models.RentalListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "meta": {
+                    "$ref": "#/definitions/models.MetaModel"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.RentalReport": {
+            "type": "object",
+            "properties": {
+                "rents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                },
+                "total_completed_rent": {
+                    "type": "integer"
+                },
+                "total_created_rent": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SuccessRentalResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.RentalReport"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "meta": {
+                    "$ref": "#/definitions/models.MetaModel"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.UpdateRentalResponse": {
             "type": "object",
             "properties": {
                 "data": {
@@ -335,9 +636,6 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
-                },
-                "meta": {
-                    "$ref": "#/definitions/models.MetaModel"
                 },
                 "status": {
                     "type": "integer"
@@ -382,6 +680,77 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "models.WarehouseTools": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.WarehouseToolsCreateResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.WarehouseTools"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.WarehouseToolsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.WarehouseTools"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "meta": {
+                    "$ref": "#/definitions/models.MetaModel"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.WarehouseToolsUpdateResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.WarehouseTools"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         }

@@ -25,7 +25,8 @@ type Controller struct {
 //	@Tags           zartool
 //	@Accept         json
 //	@Produce        json
-//	@Param          credential  body models.Owners  true    "Owner credential"
+//	@Param          credential  body models.Owners true  "Owner credential"
+//  @Success        200 {object} models.OwnerResponse
 //	@Router         /auth/login [post]
 func (s Controller) Login(e echo.Context) error {
 	var ownerCredential models.Owners
@@ -52,13 +53,13 @@ func (s Controller) Login(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	resp := models.SuccessResponse[any]{
+	resp := models.OwnerResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
-		Data: map[string]any{
-			"id":           owner.ID,
-			"created_at":   owner.CreatedAt,
-			"access_token": accessToken,
+		Data: models.Credential{
+			ID:          owner.ID,
+			CreatedAt:   owner.CreatedAt,
+			AccessToken: accessToken,
 		},
 	}
 	return e.JSON(http.StatusOK, resp)

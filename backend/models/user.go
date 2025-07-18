@@ -11,4 +11,5 @@ type User struct {
 	RentTools   []RentTools `json:"rent_tools"`
 }
 
-type RentalsResponse = SuccessResponse[User]
+type UpdateRentalResponse = SuccessResponseWithData[User]
+type RentalListResponse = SuccessResponseWithMeta[[]User]

@@ -1,5 +1,14 @@
 basePath: /api/
 definitions:
+  models.Credential:
+    properties:
+      access_token:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+    type: object
   models.MetaModel:
     properties:
       page:
@@ -9,7 +18,27 @@ definitions:
       total:
         type: integer
     type: object
+  models.OwnerResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.Credential'
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
   models.Owners:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      login:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
     type: object
   models.RentTools:
     properties:
@@ -26,14 +55,54 @@ definitions:
       updated_at:
         type: string
     type: object
-  models.RentalsResponse:
+  models.RentalListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/models.MetaModel'
+      status:
+        type: integer
+    type: object
+  models.RentalReport:
+    properties:
+      rents:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      total_completed_rent:
+        type: integer
+      total_created_rent:
+        type: integer
+    type: object
+  models.SuccessRentalResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.RentalReport'
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/models.MetaModel'
+      status:
+        type: integer
+    type: object
+  models.SuccessResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  models.UpdateRentalResponse:
     properties:
       data:
         $ref: '#/definitions/models.User'
       message:
         type: string
-      meta:
-        $ref: '#/definitions/models.MetaModel'
       status:
         type: integer
     type: object
@@ -64,6 +133,52 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.WarehouseTools:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      size:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.WarehouseToolsCreateResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.WarehouseTools'
+        type: array
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  models.WarehouseToolsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.WarehouseTools'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/models.MetaModel'
+      status:
+        type: integer
+    type: object
+  models.WarehouseToolsUpdateResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.WarehouseTools'
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
 host: localhost:3001
 info:
   contact: {}
@@ -88,7 +203,11 @@ paths:
           $ref: '#/definitions/models.Owners'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OwnerResponse'
       summary: Login
       tags:
       - zartool
@@ -106,7 +225,11 @@ paths:
           $ref: '#/definitions/models.Owners'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
       security:
       - JWT: []
       summary: Create owner
@@ -125,7 +248,11 @@ paths:
         type: integer
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
       security:
       - JWT: []
       summary: Complete rental
@@ -145,7 +272,11 @@ paths:
           $ref: '#/definitions/models.User'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
       security:
       - JWT: []
       summary: Create new rental
@@ -182,7 +313,7 @@ paths:
         type: integer
       - description: page_size
         in: query
-        name: page
+        name: page_size
         type: integer
       produces:
       - application/json
@@ -190,7 +321,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RentalsResponse'
+            $ref: '#/definitions/models.SuccessRentalResponse'
       security:
       - JWT: []
       summary: Rental report
@@ -210,7 +341,11 @@ paths:
           $ref: '#/definitions/models.User'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UpdateRentalResponse'
       security:
       - JWT: []
       summary: Update rental
@@ -236,10 +371,106 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RentalsResponse'
+            $ref: '#/definitions/models.RentalListResponse'
       security:
       - JWT: []
       summary: Get rental list
+      tags:
+      - zartool
+  /warehouse-tool/create:
+    post:
+      consumes:
+      - application/json
+      description: AddNewTools
+      parameters:
+      - description: body
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/models.WarehouseTools'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WarehouseToolsCreateResponse'
+      security:
+      - JWT: []
+      summary: AddNewTools
+      tags:
+      - zartool
+  /warehouse-tool/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteWarehouseTool
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+      security:
+      - JWT: []
+      summary: DeleteWarehouseTool
+      tags:
+      - zartool
+  /warehouse-tool/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: UpdateWareHouseTool
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.WarehouseToolsUpdateResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+      security:
+      - JWT: []
+      summary: UpdateWareHouseTool
+      tags:
+      - zartool
+  /warehouse-tools:
+    get:
+      consumes:
+      - application/json
+      description: GetWareHouseTools
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: page_size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WarehouseToolsResponse'
+      security:
+      - JWT: []
+      summary: GetWareHouseTools
       tags:
       - zartool
 schemes:

@@ -19,6 +19,7 @@ import (
 //	@Security       JWT
 //	@Produce        json
 //	@Param          payload  body models.User true "Create new rental"
+//	@Success        200 {object} models.SuccessResponse
 //	@Router         /rental/create [post]
 func (c Controller) CreateNewRental(e echo.Context) error {
 	var newRental models.User
@@ -33,7 +34,7 @@ func (c Controller) CreateNewRental(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse[models.User]{
+	resp := models.SuccessResponse{
 		Status:  http.StatusCreated,
 		Message: "Success",
 	}
@@ -49,7 +50,8 @@ func (c Controller) CreateNewRental(e echo.Context) error {
 //	@Accept         json
 //	@Produce        json
 //	@Security       JWT
-//	@Param          payload  body models.User  true    "Update rental"
+//	@Param          payload  body models.User true "Update rental"
+//	@Success        200 {object} models.UpdateRentalResponse
 //	@Router         /rental/update [put]
 func (c Controller) UpdateRental(e echo.Context) error {
 	var currentRental models.User
@@ -64,7 +66,7 @@ func (c Controller) UpdateRental(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse[models.User]{
+	resp := models.UpdateRentalResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    currentRental,
@@ -82,6 +84,7 @@ func (c Controller) UpdateRental(e echo.Context) error {
 //	@Security       JWT
 //	@Produce        json
 //	@Param          id  path  int  true "rental id"
+//  Success         200 {object} models.SuccessResponse
 //	@Router         /rental/delete/{id} [delete]
 func (c Controller) DeleteRental(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
@@ -94,7 +97,7 @@ func (c Controller) DeleteRental(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal Server error"})
 	}
 
-	resp := models.SuccessResponse[models.User]{
+	resp := models.SuccessResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 	}
@@ -111,6 +114,7 @@ func (c Controller) DeleteRental(e echo.Context) error {
 //	@Security       JWT
 //	@Produce        json
 //	@Param          id  path  int  true "rental id"
+//  @Success        200 {object} models.SuccessResponse
 //	@Router         /rental/complete/{id} [post]
 func (c Controller) CompleteRental(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
@@ -123,7 +127,7 @@ func (c Controller) CompleteRental(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	resp := models.SuccessResponse[models.User]{
+	resp := models.SuccessResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 	}
@@ -140,8 +144,8 @@ func (c Controller) CompleteRental(e echo.Context) error {
 //	@Security       JWT
 //	@Produce        json
 //	@Param          page  query  int false "page"
-//	@Param          page  query  int false "page_size"
-//	@Success        200 {object} models.RentalsResponse
+//	@Param          page_size  query  int false "page_size"
+//	@Success        200 {object} models.SuccessRentalResponse
 //	@Router         /rental/report [get]
 func (c Controller) GetRentalReport(e echo.Context) error {
 	var queryMap url.Values = e.QueryParams()
@@ -156,7 +160,7 @@ func (c Controller) GetRentalReport(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	resp := models.SuccessResponse[models.RentalReport]{
+	resp := models.SuccessRentalResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    reportData,
@@ -176,7 +180,7 @@ func (c Controller) GetRentalReport(e echo.Context) error {
 //	@Produce        json
 //	@Param          page  query  int false "page"
 //	@Param          page_size  query  int false "page_size"
-//	@Success        200 {object} models.RentalsResponse
+//	@Success        200 {object} models.RentalListResponse
 //	@Router         /rentals [get]
 func (c Controller) GetRentals(e echo.Context) error {
 	var queryMap url.Values = e.QueryParams()
@@ -191,7 +195,7 @@ func (c Controller) GetRentals(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	resp := models.SuccessResponse[[]models.User]{
+	resp := models.RentalListResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    rentals,
