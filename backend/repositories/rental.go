@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateNewRental(db gorm.DB, rental models.User) error {
+func CreateNewRental(db gorm.DB, rental *models.User) error {
 	if err := db.Create(&rental); err != nil {
 		return err.Error
 	}
@@ -15,7 +15,7 @@ func CreateNewRental(db gorm.DB, rental models.User) error {
 	return db.Save(&rental).Error
 }
 
-func UpdateRental(db gorm.DB, rental models.User) error {
+func UpdateRental(db gorm.DB, rental *models.User) error {
 	var existingTools []models.RentTools
 	var updatedRentTools = rental.RentTools
 

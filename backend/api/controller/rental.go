@@ -28,7 +28,7 @@ func (c Controller) CreateNewRental(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	err := repositories.CreateNewRental(c.DB, newRental)
+	err := repositories.CreateNewRental(c.DB, &newRental)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
@@ -60,7 +60,7 @@ func (c Controller) UpdateRental(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	err := repositories.UpdateRental(c.DB, currentRental)
+	err := repositories.UpdateRental(c.DB, &currentRental)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
@@ -77,15 +77,15 @@ func (c Controller) UpdateRental(e echo.Context) error {
 
 // Delete rental godoc
 //
-//	@Summary        Delete rental
-//	@Description    Delete rental
-//	@Tags           zartool
-//	@Accept         json
-//	@Security       JWT
-//	@Produce        json
-//	@Param          id  path  int  true "rental id"
-//  Success         200 {object} models.SuccessResponse
-//	@Router         /rental/delete/{id} [delete]
+//		@Summary        Delete rental
+//		@Description    Delete rental
+//		@Tags           zartool
+//		@Accept         json
+//		@Security       JWT
+//		@Produce        json
+//		@Param          id  path  int  true "rental id"
+//	 Success         200 {object} models.SuccessResponse
+//		@Router         /rental/delete/{id} [delete]
 func (c Controller) DeleteRental(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
@@ -107,15 +107,15 @@ func (c Controller) DeleteRental(e echo.Context) error {
 
 // Complete rental godoc
 //
-//	@Summary        Complete rental
-//	@Description    Complete rental
-//	@Tags           zartool
-//	@Accept         json
-//	@Security       JWT
-//	@Produce        json
-//	@Param          id  path  int  true "rental id"
-//  @Success        200 {object} models.SuccessResponse
-//	@Router         /rental/complete/{id} [post]
+//		@Summary        Complete rental
+//		@Description    Complete rental
+//		@Tags           zartool
+//		@Accept         json
+//		@Security       JWT
+//		@Produce        json
+//		@Param          id  path  int  true "rental id"
+//	 @Success        200 {object} models.SuccessResponse
+//		@Router         /rental/complete/{id} [post]
 func (c Controller) CompleteRental(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 

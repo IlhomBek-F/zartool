@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func AddNewTool(db gorm.DB, tools []models.WarehouseTools) error {
+func AddNewTool(db gorm.DB, tools *[]models.WarehouseTools) error {
 	result := db.Create(&tools)
 
 	return result.Error
@@ -29,7 +29,7 @@ func GetWareHouseTools(db gorm.DB, page int, pageSize int) ([]models.WarehouseTo
 	return warehouseTools, metaData, result.Error
 }
 
-func UpdateWareHouseTool(db gorm.DB, tool models.WarehouseTools) error {
+func UpdateWareHouseTool(db gorm.DB, tool *models.WarehouseTools) error {
 	result := db.Save(&tool)
 
 	return result.Error

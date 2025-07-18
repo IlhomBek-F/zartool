@@ -12,16 +12,16 @@ import (
 
 // GetWareHouseTools godoc
 //
-//	@Summary        GetWareHouseTools
-//	@Description    GetWareHouseTools
-//	@Tags           zartool
-//	@Accept         json
-//	@Produce        json
-//	@Security       JWT
-//	@Param          page query int false "page"
-//	@Param          page_size query int false "page_size"
-//  @Success        200 {object} models.WarehouseToolsResponse
-//	@Router         /warehouse-tools [get]
+//		@Summary        GetWareHouseTools
+//		@Description    GetWareHouseTools
+//		@Tags           zartool
+//		@Accept         json
+//		@Produce        json
+//		@Security       JWT
+//		@Param          page query int false "page"
+//		@Param          page_size query int false "page_size"
+//	 @Success        200 {object} models.WarehouseToolsResponse
+//		@Router         /warehouse-tools [get]
 func (s *Controller) GetWareHouseTools(e echo.Context) error {
 	var queries url.Values = e.QueryParams()
 
@@ -45,15 +45,16 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 }
 
 // AddNewTools godoc
-//	@Summary        AddNewTools
-//	@Description    AddNewTools
-//	@Tags           zartool
-//	@Accept         json
-//	@Produce        json
-//	@Security       JWT
-//	@Param          payload body models.WarehouseTools false "body"
-//  @Success        200 {object} models.WarehouseToolsCreateResponse
-//	@Router         /warehouse-tool/create [post]
+//
+//		@Summary        AddNewTools
+//		@Description    AddNewTools
+//		@Tags           zartool
+//		@Accept         json
+//		@Produce        json
+//		@Security       JWT
+//		@Param          payload body models.WarehouseTools false "body"
+//	 @Success        200 {object} models.WarehouseToolsCreateResponse
+//		@Router         /warehouse-tool/create [post]
 func (s Controller) AddNewTools(e echo.Context) error {
 	var newTool []models.WarehouseTools
 
@@ -61,7 +62,7 @@ func (s Controller) AddNewTools(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	err := repositories.AddNewTool(s.DB, newTool)
+	err := repositories.AddNewTool(s.DB, &newTool)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
@@ -77,15 +78,16 @@ func (s Controller) AddNewTools(e echo.Context) error {
 }
 
 // DeleteWarehouseTool godoc
-//	@Summary        DeleteWarehouseTool
-//	@Description    DeleteWarehouseTool
-//	@Tags           zartool
-//	@Accept         json
-//	@Produce        json
-//	@Security       JWT
-//	@Param          id path int true "id"
-//  @Success        200 {object} models.SuccessResponse
-//	@Router         /warehouse-tool/delete/{id} [delete]
+//
+//		@Summary        DeleteWarehouseTool
+//		@Description    DeleteWarehouseTool
+//		@Tags           zartool
+//		@Accept         json
+//		@Produce        json
+//		@Security       JWT
+//		@Param          id path int true "id"
+//	 @Success        200 {object} models.SuccessResponse
+//		@Router         /warehouse-tool/delete/{id} [delete]
 func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
@@ -108,15 +110,16 @@ func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 }
 
 // UpdateWareHouseTool godoc
-//	@Summary        UpdateWareHouseTool
-//	@Description    UpdateWareHouseTool
-//	@Tags           zartool
-//	@Accept         json
-//	@Produce        json
-//	@Security       JWT
-//	@Param          payload body models.WarehouseToolsUpdateResponse true "payload"
-//  @Success        200 {object} models.SuccessResponse
-//	@Router         /warehouse-tool/update/{id} [put]
+//
+//		@Summary        UpdateWareHouseTool
+//		@Description    UpdateWareHouseTool
+//		@Tags           zartool
+//		@Accept         json
+//		@Produce        json
+//		@Security       JWT
+//		@Param          payload body models.WarehouseToolsUpdateResponse true "payload"
+//	 @Success        200 {object} models.SuccessResponse
+//		@Router         /warehouse-tool/update/{id} [put]
 func (c Controller) UpdateWareHouseTool(e echo.Context) error {
 	var tool models.WarehouseTools
 
@@ -124,7 +127,7 @@ func (c Controller) UpdateWareHouseTool(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	err := repositories.UpdateWareHouseTool(c.DB, tool)
+	err := repositories.UpdateWareHouseTool(c.DB, &tool)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
