@@ -19,9 +19,9 @@
 
 | Layer     | Stack                  |
 |-----------|------------------------|
-| Frontend  | React, Axios, Vite/CRA |
-| Backend   | Go, Gorilla Mux / Gin  |
-| Database  | PostgreSQL / MySQL     |
+| Frontend  | React, Axios, Vite     |
+| Backend   | Go, Gorm, Echo         |
+| Database  | PostgreSQL             |
 | Auth      | JWT-based sessions     |
 
 ---
