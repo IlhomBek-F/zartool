@@ -9,11 +9,13 @@ import type { ResponseMetaType } from '../core/models/base-model';
 import { TABLE_PAGE_SIZE } from '../utils/constants';
 import { renterTableColumns } from '../utils/tableUtil';
 import dayjs from 'dayjs';
+import { useNotification } from '../hooks/useNotification';
 
 const { Search } = Input;
 
 function Renters() {
     const [openModal, setOpenModal] = useState(false);
+    const {contextHolder, error, success} = useNotification();
     const [data, setData] = useState<{meta: ResponseMetaType, rents: RentType[]}>();
     const [editableRent, setEditRent] = useState<RentType | null>(null);
     const queryRef = useRef({page: 1, q: '', page_size: TABLE_PAGE_SIZE});
@@ -27,7 +29,8 @@ function Renters() {
        completeRent(id)
         .then(() => {
           getData();
-        })
+          success("Rent closed successfully")
+        }).catch((err) => error(err.data.message))
     }
 
     const handleEditRent = ({id, phones, date, ...rest}: RentType) => {
@@ -43,7 +46,7 @@ function Renters() {
        deleteRent(id)
        .then(() => {
          getData();
-       })
+       }).catch(() => error("Error while deleting rent"))
     }
 
     const handleConfirmModal = async () => {
@@ -57,10 +60,13 @@ function Renters() {
                       date: `${dayjs(date).format("DD-MM-YYYY")} ${dayjs(new Date()).format("HH:mm")}`};
         
         if(editableRent) {
-          await updateRent({id: editableRent.id, ...rent, active: true, created_at: editableRent.created_at});
-          setEditRent(null)
+          updateRent({id: editableRent.id, ...rent, active: true, created_at: editableRent.created_at})
+          .catch(() => error("Error while updating rent"))
+          .finally(() => {
+            setEditRent(null)
+          })
         } else {
-          await createRent(rent);
+           createRent(rent).catch(() => error("Error while creating new rent"))
         }
         
         form.resetFields();
@@ -78,7 +84,7 @@ function Renters() {
         getRenters(queryRef.current)
         .then(({meta, data}) => {
             setData({meta: meta, rents: data.map((r) => ({...r, key: r.id}))});
-        })
+        }).catch(() => error("Error while fetching rents"))
     }
 
     const handleSearchChange = (e) => {
@@ -93,7 +99,9 @@ function Renters() {
     }
 
     return (
-         <div className="p-4">
+         <>
+          {contextHolder}
+          <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Ижарачилар</h1>
              <Space direction='horizontal' className='mb-4'>
                <Button type="primary" className='!bg-green-600' icon={<i className='pi pi-plus' />} onClick={() => setOpenModal(true)}>Янги ижара яратиш</Button>
@@ -111,6 +119,7 @@ function Renters() {
                   <RentForm form={form}/>
             </Modal>
         </div>
+         </>
     )
 }
 
