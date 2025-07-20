@@ -8,12 +8,14 @@ import { getRentReport } from '../api';
 import { useEffect, useRef, useState } from 'react';
 import type { Query, ResponseMetaType } from '../core/models/base-model';
 import type { RentReport } from '../core/models/rent-report-model';
+import { useNotification } from '../hooks/useNotification';
 
 const { Search } = Input;
 
 function Report() {
   const [report, setData] = useState<{meta: ResponseMetaType, reportData: RentReport}>();
-  const queryRef = useRef<Query>({page: 1, q: '', page_size: TABLE_PAGE_SIZE})
+  const queryRef = useRef<Query>({page: 1, q: '', page_size: TABLE_PAGE_SIZE});
+  const {contextHolder, error} = useNotification();
   useEffect(() => {
       getData()
   }, [])
@@ -22,7 +24,7 @@ function Report() {
           getRentReport(queryRef.current)
           .then(({meta, data}) => {
               setData({meta: meta, reportData: data});
-          })
+          }).catch(() => error("Error while getting report"))
   }
 
   const handleSearch = (q: string) => {
@@ -37,7 +39,9 @@ function Report() {
   }
 
     return (
-        <div className="p-4">
+      <>
+       {contextHolder}
+       <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Кунлик хисобот | {dayjs(new Date()).format("DD.MM.YYYY")}</h1>
             <Row gutter={16} className='mb-4'>
               <Col span={12}>
@@ -69,6 +73,8 @@ function Report() {
                              columns={reportTableColumns} 
                              dataSource={report?.reportData.rents} key={1}/>
         </div>
+      </>
+        
     );
 }
 

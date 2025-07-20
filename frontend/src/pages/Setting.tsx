@@ -6,6 +6,7 @@ import type { WarehouseToolType } from "../core/models/warehouse-tool-model";
 import type { ResponseMetaType } from "../core/models/base-model";
 import { TABLE_PAGE_SIZE } from "../utils/constants";
 import { warehouseTableColumns } from "../utils/tableUtil";
+import { useNotification } from "../hooks/useNotification";
 
 const formItemLayout = {
   labelCol: {
@@ -20,6 +21,7 @@ const formItemLayout = {
 
 function Setting() {
     const [openModal, setOpenModal] = useState(false);
+    const {contextHolder, error} = useNotification();
     const [dataSource, setTools] = useState<{meta: ResponseMetaType, data: WarehouseToolType[]}>();
     const [editToolId, setEditToolId] = useState<number | null>(null)
     const [form] = Form.useForm();
@@ -32,7 +34,7 @@ function Setting() {
        getRentTools(page)
         .then(({data, meta}) => {
            setTools({meta, data: data.map((t) => ({...t, key: t.id}))})
-        })
+        }).catch(() => error("Error while getting rent tools"))
     }
 
     const handleConfirmModal = async () => {
@@ -46,14 +48,14 @@ function Setting() {
           setEditToolId(null);
           form.resetFields();
           setOpenModal(false);
-      })
+      }).catch(() => error("Something went wrong. Please try again"))
     }
 
     const handleDeleteTool = (id: number) => {
        deleteTool(id)
        .then(() => {
          getTools()
-       })
+       }).catch(() => error("Error while deleting rent tool"))
     }
 
     const handleEditTool = (tool: WarehouseToolType) => {
@@ -63,7 +65,9 @@ function Setting() {
     }
 
     return (
-        <div className="p-4">
+      <>
+      {contextHolder}
+       <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Омбор/Склад</h1>
             <Button type="primary" 
                     className='!bg-green-600 mb-2' 
@@ -108,6 +112,7 @@ function Setting() {
                 </Form>
             </Modal>
         </div>
+      </>
     );
 }
 
