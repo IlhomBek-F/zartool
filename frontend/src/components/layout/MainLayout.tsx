@@ -38,7 +38,7 @@ function MainLayout() {
       key: '3',
       icon: <i className='pi pi-cog' />,
       label: 'Омбор/склад',
-      onClick: () => navigate(ROUTES_PATHS.SETTING)
+      onClick: () => navigate(ROUTES_PATHS.Warehouse)
    },
 ]
 

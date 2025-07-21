@@ -7,7 +7,7 @@ export const ROUTES_PATHS = {
     MAIN: "main",
     REPORT: "report",
     RENTERS: "renters",
-    SETTING: "setting",
+    Warehouse: "warehouse",
 }
 
 export const TABLE_PAGE_SIZE = 5
