@@ -7,12 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateNewRental(db gorm.DB, rental *models.UserCreatePayload) error {
-	if err := db.Create(&rental); err != nil {
+func CreateNewRental(db gorm.DB, rentalPayload *models.User) error {
+
+	if err := db.Create(&rentalPayload); err != nil {
 		return err.Error
 	}
 
-	return db.Save(&rental).Error
+	return db.Save(&rentalPayload).Error
 }
 
 func UpdateRental(db gorm.DB, rental *models.User) error {

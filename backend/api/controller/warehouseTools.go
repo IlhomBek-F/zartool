@@ -56,13 +56,19 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 //	 @Success        200 {object} models.WarehouseToolsCreateResponse
 //		@Router         /warehouse-tool/create [post]
 func (s Controller) AddNewTools(e echo.Context) error {
-	var newTool []models.WarehouseTools
+	var newTool = new([]models.WarehouseTools)
 
 	if err := e.Bind(&newTool); err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	err := repositories.AddNewTool(s.DB, &newTool)
+	for _, tool := range *newTool {
+		if err := e.Validate(tool); err != nil {
+			return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+		}
+	}
+
+	err := repositories.AddNewTool(s.DB, newTool)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
@@ -71,7 +77,7 @@ func (s Controller) AddNewTools(e echo.Context) error {
 	resp := models.WarehouseToolsCreateResponse{
 		Status:  http.StatusCreated,
 		Message: "Succes",
-		Data:    newTool,
+		Data:    *newTool,
 	}
 
 	return e.JSON(http.StatusCreated, resp)
@@ -121,13 +127,17 @@ func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 //	 @Success        200 {object} models.SuccessResponse
 //		@Router         /warehouse-tool/update/{id} [put]
 func (c Controller) UpdateWareHouseTool(e echo.Context) error {
-	var tool models.WarehouseTools
+	var tool = new(models.WarehouseTools)
 
 	if err := e.Bind(&tool); err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	err := repositories.UpdateWareHouseTool(c.DB, &tool)
+	if err := e.Validate(tool); err != nil {
+		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+	}
+
+	err := repositories.UpdateWareHouseTool(c.DB, tool)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
@@ -136,7 +146,7 @@ func (c Controller) UpdateWareHouseTool(e echo.Context) error {
 	resp := models.WarehouseToolsUpdateResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
-		Data:    tool,
+		Data:    *tool,
 	}
 
 	return e.JSON(http.StatusOK, resp)

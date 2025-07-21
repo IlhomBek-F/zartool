@@ -22,7 +22,7 @@ import (
 //	@Success        200 {object} models.SuccessResponse
 //	@Router         /rental/create [post]
 func (c Controller) CreateNewRental(e echo.Context) error {
-	newUserRentalPayload := new(models.UserCreatePayload)
+	newUserRentalPayload := new(models.User)
 
 	if err := e.Bind(newUserRentalPayload); err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
@@ -58,13 +58,17 @@ func (c Controller) CreateNewRental(e echo.Context) error {
 //	@Success        200 {object} models.UpdateRentalResponse
 //	@Router         /rental/update [put]
 func (c Controller) UpdateRental(e echo.Context) error {
-	var currentRental models.User
+	var currentRental = new(models.User)
 
 	if err := e.Bind(&currentRental); err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	err := repositories.UpdateRental(c.DB, &currentRental)
+	if err := e.Validate(currentRental); err != nil {
+		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+	}
+
+	err := repositories.UpdateRental(c.DB, currentRental)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
@@ -73,7 +77,7 @@ func (c Controller) UpdateRental(e echo.Context) error {
 	resp := models.UpdateRentalResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
-		Data:    currentRental,
+		Data:    *currentRental,
 	}
 
 	return e.JSON(http.StatusOK, resp)

@@ -61,17 +61,22 @@ function Renters() {
         
         if(editableRent) {
           updateRent({id: editableRent.id, ...rent, active: true, created_at: editableRent.created_at})
-          .catch(() => error("Error while updating rent"))
-          .finally(() => {
+          .then(() => {
+            form.resetFields();
+            setOpenModal(false);
+            getData();
             setEditRent(null)
           })
+          .catch(() => error("Error while updating rent"))
         } else {
-           createRent(rent).catch(() => error("Error while creating new rent"))
+           createRent(rent)
+           .then(() => {
+              form.resetFields();
+              setOpenModal(false);
+              getData();
+           })
+           .catch(() => error("Error while creating new rent"))
         }
-        
-        form.resetFields();
-        setOpenModal(false);
-        getData();
     }
 
     const handleCloseModal = () => {

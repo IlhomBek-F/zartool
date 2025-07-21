@@ -2,8 +2,8 @@ package models
 
 type WarehouseTools struct {
 	Base
-	Name string `json:"name"`
-	Size string `json:"size"`
+	Name string `json:"name" validate:"required"`
+	Size string `json:"size" validate:"required"`
 }
 
 type WarehouseToolsResponse = SuccessResponseWithMeta[[]WarehouseTools]
