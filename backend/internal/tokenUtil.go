@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func GeneretaAccessToken(user models.Owners, secret string, expiry int) (token string, err error) {
+func GeneretaAccessToken(user models.Owner, secret string, expiry int) (token string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry)).Unix()
 
 	claims := models.JwtClaims{

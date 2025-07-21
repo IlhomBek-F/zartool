@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"os"
 	"zartool/api/controller"
+	"zartool/models"
 
+	"github.com/go-playground/validator"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	echojwt "github.com/labstack/echo-jwt"
@@ -25,7 +27,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.Use(middleware.Logger())
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(10))))
 	e.Use(configureCORS())
-
+	e.Validator = &models.CustomValidator{Validator: validator.New()}
 	secretKey := os.Getenv("ACCESS_TOKEN_SECRET")
 
 	publicRoute := e.Group("/api")

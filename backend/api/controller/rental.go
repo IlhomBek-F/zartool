@@ -22,13 +22,17 @@ import (
 //	@Success        200 {object} models.SuccessResponse
 //	@Router         /rental/create [post]
 func (c Controller) CreateNewRental(e echo.Context) error {
-	var newRental models.User
+	newUserRentalPayload := new(models.UserCreatePayload)
 
-	if err := e.Bind(&newRental); err != nil {
+	if err := e.Bind(newUserRentalPayload); err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	err := repositories.CreateNewRental(c.DB, &newRental)
+	if err := e.Validate(newUserRentalPayload); err != nil {
+		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+	}
+
+	err := repositories.CreateNewRental(c.DB, newUserRentalPayload)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})

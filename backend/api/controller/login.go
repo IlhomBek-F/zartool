@@ -20,19 +20,23 @@ type Controller struct {
 
 // Login godoc
 //
-//	@Summary        Login
-//	@Description    Login to app
-//	@Tags           zartool
-//	@Accept         json
-//	@Produce        json
-//	@Param          credential  body models.Owners true  "Owner credential"
-//  @Success        200 {object} models.OwnerResponse
-//	@Router         /auth/login [post]
+//		@Summary        Login
+//		@Description    Login to app
+//		@Tags           zartool
+//		@Accept         json
+//		@Produce        json
+//		@Param          credential  body models.OwnerPayload true  "Owner credential"
+//	 @Success        200 {object} models.OwnerResponse
+//		@Router         /auth/login [post]
 func (s Controller) Login(e echo.Context) error {
-	var ownerCredential models.Owners
+	ownerCredential := new(models.OwnerPayload)
 
 	if err := e.Bind(&ownerCredential); err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+	}
+
+	if err := e.Validate(ownerCredential); err != nil {
+		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
 	}
 
 	owner, err := repositories.GetOwnerByLogin(s.DB, ownerCredential.Login)

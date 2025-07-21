@@ -48,7 +48,7 @@ func InitServer() *http.Server {
 
 	db.AutoMigrate(&models.User{}, &models.RentTools{})
 	db.AutoMigrate(&models.WarehouseTools{})
-	db.AutoMigrate(&models.Owners{})
+	db.AutoMigrate(&models.Owner{})
 
 	portToInt, _ := strconv.Atoi(os.Getenv("PORT"))
 
@@ -69,7 +69,7 @@ func InitServer() *http.Server {
 }
 
 func loadEnv() {
-	err := godotenv.Load("./.env")
+	err := godotenv.Load("../.env")
 
 	if err != nil {
 		fmt.Println("Error while loading env file")

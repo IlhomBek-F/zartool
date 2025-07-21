@@ -1,15 +1,27 @@
 package models
 
-type User struct {
-	Base
-	Full_name   string      `json:"full_name"`
-	Address     string      `json:"address"`
-	Pre_payment uint        `json:"pre_payment"`
-	Active      bool        `gorm:"default:true" json:"active"`
-	Phones      []string    `gorm:"serializer:json" json:"phones"`
-	Date        string      `json:"date"`
-	RentTools   []RentTools `json:"rent_tools"`
-}
+type (
+	User struct {
+		Base
+		Full_name   string      `json:"full_name" validate:"required,min=3"`
+		Address     string      `json:"address"`
+		Pre_payment uint        `json:"pre_payment"`
+		Active      bool        `gorm:"default:true" json:"active"`
+		Phones      []string    `gorm:"serializer:json" json:"phones"`
+		Date        string      `json:"date" validate:"required"`
+		RentTools   []RentTools `json:"rent_tools" validate:"required"`
+	}
+
+	UserCreatePayload struct {
+		Full_name   string             `json:"full_name" validate:"required,min=3"`
+		Address     string             `json:"address"`
+		Pre_payment uint               `json:"pre_payment"`
+		Active      bool               `gorm:"default:true" json:"active"`
+		Phones      []string           `gorm:"serializer:json" json:"phones"`
+		Date        string             `json:"date" validate:"required"`
+		RentTools   []RentToolsPayload `json:"rent_tools" validate:"required"`
+	}
+)
 
 type UpdateRentalResponse = SuccessResponseWithData[User]
 type RentalListResponse = SuccessResponseWithMeta[[]User]

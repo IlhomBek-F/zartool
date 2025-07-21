@@ -11,36 +11,41 @@ import (
 
 // Create owner godoc
 //
-//	@Summary        Create owner
-//	@Description    Create new owner
-//	@Tags           zartool
-//	@Accept         json
-//	@Produce        json
-//	@Security       JWT
-//	@Param          owner  body models.Owners true  "Owner payload"
-//  @Success        200 {object} models.SuccessResponse
-//	@Router         /create-owner [post]
+//		@Summary        Create owner
+//		@Description    Create new owner
+//		@Tags           zartool
+//		@Accept         json
+//		@Produce        json
+//		@Security       JWT
+//		@Param          owner  body models.OwnerPayload true  "Owner payload"
+//	 @Success        200 {object} models.SuccessResponse
+//		@Router         /create-owner [post]
 func (s *Controller) CreateOwner(e echo.Context) error {
-	var newOwner models.Owners
+	newOwnerPayload := new(models.OwnerPayload)
+	var createdOwner models.Owner
 
-	if err := e.Bind(&newOwner); err != nil {
+	if err := e.Bind(&newOwnerPayload); err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	_, err := repositories.GetOwnerByLogin(s.DB, newOwner.Login)
+	if err := e.Validate(newOwnerPayload); err != nil {
+		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+	}
+
+	_, err := repositories.GetOwnerByLogin(s.DB, newOwnerPayload.Login)
 
 	if err == nil {
 		return e.JSON(http.StatusFound, models.ErrorResponse{Status: http.StatusFound, Message: "owner exist with this login"})
 	}
 
-	encryptPassword, err := bcrypt.GenerateFromPassword([]byte(newOwner.Password), bcrypt.DefaultCost)
-	newOwner.Password = string(encryptPassword)
+	encryptPassword, err := bcrypt.GenerateFromPassword([]byte(newOwnerPayload.Password), bcrypt.DefaultCost)
+	newOwnerPayload.Password = string(encryptPassword)
 
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 
-	if err := repositories.CreateOwner(s.DB, newOwner); err != nil {
+	if err := repositories.CreateOwner(s.DB, createdOwner); err != nil {
 		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
 	}
 

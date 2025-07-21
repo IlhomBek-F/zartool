@@ -4,16 +4,23 @@ import (
 	"time"
 )
 
-type Owners struct {
-	Base
-	Login    string `json:"login"`
-	Password string `json:"password"`
-}
+type (
+	OwnerPayload struct {
+		Login    string `json:"login" validate:"required,max=100"`
+		Password string `json:"password" validate:"required,min=3"`
+	}
 
-type Credential struct {
-	ID          uint      `json:"id"`
-	CreatedAt   time.Time `json:"created_at"`
-	AccessToken string    `json:"access_token"`
-}
+	Owner struct {
+		Base
+		Login    string `json:"login"`
+		Password string `json:"password"`
+	}
 
-type OwnerResponse = SuccessResponseWithData[Credential]
+	Credential struct {
+		ID          uint      `json:"id"`
+		CreatedAt   time.Time `json:"created_at"`
+		AccessToken string    `json:"access_token"`
+	}
+
+	OwnerResponse = SuccessResponseWithData[Credential]
+)

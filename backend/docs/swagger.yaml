@@ -18,6 +18,16 @@ definitions:
       total:
         type: integer
     type: object
+  models.OwnerPayload:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
   models.OwnerResponse:
     properties:
       data:
@@ -26,19 +36,6 @@ definitions:
         type: string
       status:
         type: integer
-    type: object
-  models.Owners:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      login:
-        type: string
-      password:
-        type: string
-      updated_at:
-        type: string
     type: object
   models.RentTools:
     properties:
@@ -200,7 +197,7 @@ paths:
         name: credential
         required: true
         schema:
-          $ref: '#/definitions/models.Owners'
+          $ref: '#/definitions/models.OwnerPayload'
       produces:
       - application/json
       responses:
@@ -222,7 +219,7 @@ paths:
         name: owner
         required: true
         schema:
-          $ref: '#/definitions/models.Owners'
+          $ref: '#/definitions/models.OwnerPayload'
       produces:
       - application/json
       responses:
