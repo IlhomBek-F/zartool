@@ -2,11 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Login } from "../pages/Login";
 import { MainLayout } from "../components/layout/MainLayout";
 import { ROUTES_PATHS } from "../utils/constants";
-import { Report } from "../pages/Report";
-import { Renters } from "../pages/Renters";
-import { Setting } from "../pages/Setting";
 import { PrivateRoute } from "./PrivateRoute";
-
 
 export const router = createBrowserRouter([
     {
@@ -23,18 +19,24 @@ export const router = createBrowserRouter([
         children: [
             {   
                 path: ROUTES_PATHS.REPORT,
-                element: <Report />,
+                lazy:() => import("../pages/Report").then(({Report}) => ({Component: Report})),
+                errorElement: <div>Error page</div>
             },
             {   
                 index: true,
                 path: ROUTES_PATHS.RENTERS,
-                element: <Renters />,
+                lazy: () => import("../pages/Renters").then(({Renters}) => ({Component: Renters})),
                 errorElement: <div>Error page</div>
             },
             {
                 path: ROUTES_PATHS.SETTING,
-                element: <Setting />
+                lazy: () => import("../pages/Setting").then(({Setting}) => ({Component: Setting})),
+                errorElement: <div>Error page</div>
             }
         ]    
+    },
+    {
+        path: "*",
+        element: <Navigate to="/renters"/>
     }
 ])
