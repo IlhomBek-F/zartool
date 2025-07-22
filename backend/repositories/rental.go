@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"time"
+	"zartool/internal"
 	"zartool/models"
 
 	"gorm.io/gorm"
@@ -43,18 +44,29 @@ func UpdateRental(db gorm.DB, rental *models.User) error {
 		}
 	}
 
-	if len(removedTools) > 0 {
-		if err := db.WithContext(ctx).Select("RentTools").Delete(removedTools).Error; err != nil {
-			return err
-		}
-	}
-
-	if len(toolsMap) > 0 {
-		for _, updatingTool := range toolsMap {
-			if err := db.WithContext(ctx).Model(&models.RentTools{}).Where("user_id = ? AND id = ?", rental.ID, updatingTool.ID).Updates(updatingTool); err.Error != nil {
-				return err.Error
+	transactionError := internal.WithTransaction(ctx, &db, func(tx *gorm.DB) error {
+		if len(removedTools) > 0 {
+			if err := tx.Select("RentTools").Delete(removedTools).Error; err != nil {
+				return err
 			}
 		}
+
+		if len(toolsMap) > 0 {
+			for _, updatingTool := range toolsMap {
+				if err := tx.WithContext(ctx).
+					Model(&models.RentTools{}).
+					Where("user_id = ? AND id = ?", rental.ID, updatingTool.ID).
+					Updates(updatingTool); err.Error != nil {
+					return err.Error
+				}
+			}
+		}
+
+		return nil
+	})
+
+	if transactionError != nil {
+		return transactionError
 	}
 
 	return db.WithContext(ctx).Save(rental).Error
