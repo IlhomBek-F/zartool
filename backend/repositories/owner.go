@@ -20,7 +20,10 @@ func GetOwnerByLogin(db gorm.DB, login string) (models.Owner, error) {
 }
 
 func CreateOwner(db gorm.DB, owner models.Owner) error {
-	result := db.Create(&owner)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	result := db.WithContext(ctx).Create(&owner)
 
 	return result.Error
 }
