@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"zartool/internal"
 	"zartool/models"
 	"zartool/repositories"
 
@@ -61,17 +62,17 @@ func (c Controller) UpdateRental(e echo.Context) error {
 	var currentRental = new(models.User)
 
 	if err := e.Bind(&currentRental); err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	if err := e.Validate(currentRental); err != nil {
-		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	err := repositories.UpdateRental(c.DB, currentRental)
 
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	resp := models.UpdateRentalResponse{
@@ -98,11 +99,11 @@ func (c Controller) DeleteRental(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	if err := repositories.DeleteRental(c.DB, uint(id)); err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal Server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal Server error"})
 	}
 
 	resp := models.SuccessResponse{
@@ -128,11 +129,11 @@ func (c Controller) CompleteRental(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	if err := repositories.CompleteRental(c.DB, uint(id)); err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	resp := models.SuccessResponse{
@@ -165,7 +166,7 @@ func (c Controller) GetRentalReport(e echo.Context) error {
 	reportData, meta, err := repositories.GetRentalReport(c.DB, page, pageSize, queryTerm)
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	resp := models.SuccessRentalResponse{
@@ -200,7 +201,7 @@ func (c Controller) GetRentals(e echo.Context) error {
 	rentals, metaData, err := repositories.GetRentals(c.DB, page, pageSize, queryTerm)
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	resp := models.RentalListResponse{

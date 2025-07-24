@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"zartool/internal"
 	"zartool/models"
 	"zartool/repositories"
 
@@ -31,7 +32,7 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 	tools, meta, err := repositories.GetWareHouseTools(s.DB, page, pageSize)
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	resp := models.WarehouseToolsResponse{
@@ -59,19 +60,19 @@ func (s Controller) AddNewTools(e echo.Context) error {
 	var newTool = new([]models.WarehouseTools)
 
 	if err := e.Bind(&newTool); err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	for _, tool := range *newTool {
 		if err := e.Validate(tool); err != nil {
-			return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+			return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 		}
 	}
 
 	err := repositories.AddNewTool(s.DB, newTool)
 
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	resp := models.WarehouseToolsCreateResponse{
@@ -98,13 +99,13 @@ func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	err = repositories.DeleteWarehouseTool(c.DB, id)
 
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	resp := models.SuccessResponse{
@@ -130,17 +131,17 @@ func (c Controller) UpdateWareHouseTool(e echo.Context) error {
 	var tool = new(models.WarehouseTools)
 
 	if err := e.Bind(&tool); err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	if err := e.Validate(tool); err != nil {
-		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	err := repositories.UpdateWareHouseTool(c.DB, tool)
 
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	resp := models.WarehouseToolsUpdateResponse{

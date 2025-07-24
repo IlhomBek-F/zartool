@@ -32,17 +32,17 @@ func (s Controller) Login(e echo.Context) error {
 	ownerCredential := new(models.OwnerPayload)
 
 	if err := e.Bind(&ownerCredential); err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	if err := e.Validate(ownerCredential); err != nil {
-		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	owner, err := repositories.GetOwnerByLogin(s.DB, ownerCredential.Login)
 
 	if err != nil {
-		return e.JSON(http.StatusNotFound, models.ErrorResponse{Status: http.StatusNotFound, Message: "Owner not found"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Owner not found"})
 	}
 
 	if bcrypt.CompareHashAndPassword([]byte(owner.Password), []byte(ownerCredential.Password)) != nil {
@@ -54,7 +54,7 @@ func (s Controller) Login(e echo.Context) error {
 	accessToken, err := internal.GeneretaAccessToken(owner, jwtPrivateKey, accessTokenExpiryHour)
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	resp := models.OwnerResponse{
