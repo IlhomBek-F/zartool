@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"zartool/internal"
 	"zartool/models"
 	"zartool/repositories"
 
@@ -25,28 +26,28 @@ func (s *Controller) CreateOwner(e echo.Context) error {
 	var createdOwner models.Owner
 
 	if err := e.Bind(&newOwnerPayload); err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	if err := e.Validate(newOwnerPayload); err != nil {
-		return e.JSON(http.StatusUnprocessableEntity, models.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	_, err := repositories.GetOwnerByLogin(s.DB, newOwnerPayload.Login)
 
 	if err == nil {
-		return e.JSON(http.StatusFound, models.ErrorResponse{Status: http.StatusFound, Message: "owner exist with this login"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "owner exist with this login"})
 	}
 
 	encryptPassword, err := bcrypt.GenerateFromPassword([]byte(newOwnerPayload.Password), bcrypt.DefaultCost)
 	newOwnerPayload.Password = string(encryptPassword)
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	if err := repositories.CreateOwner(s.DB, createdOwner); err != nil {
-		return e.JSON(http.StatusInternalServerError, models.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	resp := models.SuccessResponse{

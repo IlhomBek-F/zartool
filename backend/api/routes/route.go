@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"context"
 	"net/http"
 	"os"
+	"time"
 	"zartool/api/controller"
 	"zartool/models"
 
@@ -25,8 +27,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
-	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(10))))
 	e.Use(configureCORS())
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(10))))
+
+	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+		Skipper:      middleware.DefaultSkipper,
+		ErrorMessage: "custom timeout error message returns to client",
+		Timeout:      2 * time.Second,
+	}))
+
 	e.Validator = &models.CustomValidator{Validator: validator.New()}
 	secretKey := os.Getenv("ACCESS_TOKEN_SECRET")
 
@@ -72,4 +81,18 @@ func configureCORS() echo.MiddlewareFunc {
 		AllowCredentials: true,
 		MaxAge:           30,
 	})
+}
+
+// SetRequestContextWithTimeout will set the request context with timeout for every incoming HTTP Request
+func setRequestContextWithTimeout(d time.Duration) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx, cancel := context.WithTimeout(c.Request().Context(), d)
+			defer cancel()
+
+			newRequest := c.Request().WithContext(ctx)
+			c.SetRequest(newRequest)
+			return next(c)
+		}
+	}
 }
