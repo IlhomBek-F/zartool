@@ -2,15 +2,15 @@ package internal
 
 import (
 	"time"
-	"zartool/models"
+	"zartool/domain"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func GeneretaAccessToken(user models.Owner, secret string, expiry int) (token string, err error) {
+func GeneretaAccessToken(user domain.Owner, secret string, expiry int) (token string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry)).Unix()
 
-	claims := models.JwtClaims{
+	claims := domain.JwtClaims{
 		Id: int(user.ID),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: exp,

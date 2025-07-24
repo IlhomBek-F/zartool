@@ -1,27 +1,34 @@
 package repositories
 
 import (
-	"zartool/models"
+	"context"
+	"time"
+	"zartool/domain"
 
 	"gorm.io/gorm"
 )
 
-func AddNewTool(db gorm.DB, tools *[]models.WarehouseTools) error {
-	result := db.Create(&tools)
+func AddNewTool(db gorm.DB, tools *[]domain.WarehouseTools) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	result := db.WithContext(ctx).Create(&tools)
 
 	return result.Error
 }
 
-func GetWareHouseTools(db gorm.DB, page int, pageSize int) ([]models.WarehouseTools, models.MetaModel, error) {
-	var warehouseTools []models.WarehouseTools
+func GetWareHouseTools(db gorm.DB, page int, pageSize int) ([]domain.WarehouseTools, domain.MetaModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	var warehouseTools []domain.WarehouseTools
 	var count int64
-	var metaData models.MetaModel
+	var metaData domain.MetaModel
 
-	if countResult := db.Model(&models.WarehouseTools{}).Count(&count); countResult.Error != nil {
+	if countResult := db.WithContext(ctx).Model(&domain.WarehouseTools{}).Count(&count); countResult.Error != nil {
 		return nil, metaData, countResult.Error
 	}
 
-	result := db.Scopes(Paginate(page, pageSize)).Order("created_at DESC").Find(&warehouseTools)
+	result := db.WithContext(ctx).Scopes(Paginate(page, pageSize)).Order("created_at DESC").Find(&warehouseTools)
 
 	metaData.Page = page
 	metaData.Total = count
@@ -29,15 +36,21 @@ func GetWareHouseTools(db gorm.DB, page int, pageSize int) ([]models.WarehouseTo
 	return warehouseTools, metaData, result.Error
 }
 
-func UpdateWareHouseTool(db gorm.DB, tool *models.WarehouseTools) error {
-	result := db.Save(&tool)
+func UpdateWareHouseTool(db gorm.DB, tool *domain.WarehouseTools) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	result := db.WithContext(ctx).Save(&tool)
 
 	return result.Error
 }
 
 func DeleteWarehouseTool(db gorm.DB, id int) error {
-	var deletedTool models.WarehouseTools
-	result := db.Delete(&deletedTool, id)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	var deletedTool domain.WarehouseTools
+	result := db.WithContext(ctx).Delete(&deletedTool, id)
 
 	return result.Error
 }

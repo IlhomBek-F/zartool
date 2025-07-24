@@ -1,4 +1,4 @@
-package models
+package domain
 
 type RentalReport struct {
 	Total_created_rent   int64  `json:"total_created_rent"`

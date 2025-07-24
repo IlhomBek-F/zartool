@@ -1,4 +1,4 @@
-package models
+package domain
 
 type SuccessResponseWithMeta[T any] struct {
 	Status  int       `json:"status"`

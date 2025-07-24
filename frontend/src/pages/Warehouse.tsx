@@ -19,7 +19,7 @@ const formItemLayout = {
   },
 };
 
-function Setting() {
+function Warehouse() {
     const [openModal, setOpenModal] = useState(false);
     const {contextHolder, error} = useNotification();
     const [dataSource, setTools] = useState<{meta: ResponseMetaType, data: WarehouseToolType[]}>();
@@ -116,4 +116,4 @@ function Setting() {
     );
 }
 
-export { Setting };
+export { Warehouse };

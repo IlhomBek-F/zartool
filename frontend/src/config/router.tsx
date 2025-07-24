@@ -29,8 +29,8 @@ export const router = createBrowserRouter([
                 errorElement: <div>Error page</div>
             },
             {
-                path: ROUTES_PATHS.SETTING,
-                lazy: () => import("../pages/Setting").then(({Setting}) => ({Component: Setting})),
+                path: ROUTES_PATHS.Warehouse,
+                lazy: () => import("../pages/Warehouse").then(({Warehouse}) => ({Component: Warehouse})),
                 errorElement: <div>Error page</div>
             }
         ]    

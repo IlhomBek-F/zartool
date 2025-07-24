@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"zartool/domain"
 	"zartool/internal"
-	"zartool/models"
 	"zartool/repositories"
 
 	"github.com/labstack/echo/v4"
@@ -21,7 +21,7 @@ import (
 //		@Security       JWT
 //		@Param          page query int false "page"
 //		@Param          page_size query int false "page_size"
-//	 @Success        200 {object} models.WarehouseToolsResponse
+//	 @Success        200 {object} domain.WarehouseToolsResponse
 //		@Router         /warehouse-tools [get]
 func (s *Controller) GetWareHouseTools(e echo.Context) error {
 	var queries url.Values = e.QueryParams()
@@ -32,10 +32,10 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 	tools, meta, err := repositories.GetWareHouseTools(s.DB, page, pageSize)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
-	resp := models.WarehouseToolsResponse{
+	resp := domain.WarehouseToolsResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    tools,
@@ -53,29 +53,29 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 //		@Accept         json
 //		@Produce        json
 //		@Security       JWT
-//		@Param          payload body models.WarehouseTools false "body"
-//	 @Success        200 {object} models.WarehouseToolsCreateResponse
+//		@Param          payload body domain.WarehouseTools false "body"
+//	 @Success        200 {object} domain.WarehouseToolsCreateResponse
 //		@Router         /warehouse-tool/create [post]
 func (s Controller) AddNewTools(e echo.Context) error {
-	var newTool = new([]models.WarehouseTools)
+	var newTool = new([]domain.WarehouseTools)
 
 	if err := e.Bind(&newTool); err != nil {
-		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	for _, tool := range *newTool {
 		if err := e.Validate(tool); err != nil {
-			return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+			return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 		}
 	}
 
 	err := repositories.AddNewTool(s.DB, newTool)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
-	resp := models.WarehouseToolsCreateResponse{
+	resp := domain.WarehouseToolsCreateResponse{
 		Status:  http.StatusCreated,
 		Message: "Succes",
 		Data:    *newTool,
@@ -93,22 +93,22 @@ func (s Controller) AddNewTools(e echo.Context) error {
 //		@Produce        json
 //		@Security       JWT
 //		@Param          id path int true "id"
-//	 @Success        200 {object} models.SuccessResponse
+//	 @Success        200 {object} domain.SuccessResponse
 //		@Router         /warehouse-tool/delete/{id} [delete]
 func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	err = repositories.DeleteWarehouseTool(c.DB, id)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
-	resp := models.SuccessResponse{
+	resp := domain.SuccessResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 	}
@@ -124,27 +124,27 @@ func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 //		@Accept         json
 //		@Produce        json
 //		@Security       JWT
-//		@Param          payload body models.WarehouseToolsUpdateResponse true "payload"
-//	 @Success        200 {object} models.SuccessResponse
+//		@Param          payload body domain.WarehouseToolsUpdateResponse true "payload"
+//	 @Success        200 {object} domain.SuccessResponse
 //		@Router         /warehouse-tool/update/{id} [put]
 func (c Controller) UpdateWareHouseTool(e echo.Context) error {
-	var tool = new(models.WarehouseTools)
+	var tool = new(domain.WarehouseTools)
 
 	if err := e.Bind(&tool); err != nil {
-		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
 	if err := e.Validate(tool); err != nil {
-		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
 	err := repositories.UpdateWareHouseTool(c.DB, tool)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), models.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
-	resp := models.WarehouseToolsUpdateResponse{
+	resp := domain.WarehouseToolsUpdateResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
 		Data:    *tool,
