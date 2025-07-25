@@ -1,5 +1,12 @@
 package domain
 
+type WarehouseRepository interface {
+	AddNewTool(tools *[]WarehouseTools) error
+	GetWareHouseTools(page int, pageSize int) ([]WarehouseTools, MetaModel, error)
+	UpdateWareHouseTool(tool *WarehouseTools) error
+	DeleteWarehouseTool(id int) error
+}
+
 type WarehouseTools struct {
 	Base
 	Name string `json:"name" validate:"required"`

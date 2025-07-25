@@ -6,10 +6,15 @@ import (
 	"strconv"
 	"zartool/domain"
 	"zartool/internal"
-	"zartool/repositories"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
+
+type WarehouseToolController struct {
+	Db                  gorm.DB
+	WarehouseRepository domain.WarehouseRepository
+}
 
 // GetWareHouseTools godoc
 //
@@ -23,13 +28,13 @@ import (
 //		@Param          page_size query int false "page_size"
 //	 @Success        200 {object} domain.WarehouseToolsResponse
 //		@Router         /warehouse-tools [get]
-func (s *Controller) GetWareHouseTools(e echo.Context) error {
+func (wc WarehouseToolController) GetWareHouseTools(e echo.Context) error {
 	var queries url.Values = e.QueryParams()
 
 	page, _ := strconv.Atoi(queries.Get("page"))
 	pageSize, _ := strconv.Atoi(queries.Get("page_size"))
 
-	tools, meta, err := repositories.GetWareHouseTools(s.DB, page, pageSize)
+	tools, meta, err := wc.WarehouseRepository.GetWareHouseTools(page, pageSize)
 
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
@@ -56,7 +61,7 @@ func (s *Controller) GetWareHouseTools(e echo.Context) error {
 //		@Param          payload body domain.WarehouseTools false "body"
 //	 @Success        200 {object} domain.WarehouseToolsCreateResponse
 //		@Router         /warehouse-tool/create [post]
-func (s Controller) AddNewTools(e echo.Context) error {
+func (wc WarehouseToolController) AddNewTools(e echo.Context) error {
 	var newTool = new([]domain.WarehouseTools)
 
 	if err := e.Bind(&newTool); err != nil {
@@ -69,7 +74,7 @@ func (s Controller) AddNewTools(e echo.Context) error {
 		}
 	}
 
-	err := repositories.AddNewTool(s.DB, newTool)
+	err := wc.WarehouseRepository.AddNewTool(newTool)
 
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
@@ -95,14 +100,14 @@ func (s Controller) AddNewTools(e echo.Context) error {
 //		@Param          id path int true "id"
 //	 @Success        200 {object} domain.SuccessResponse
 //		@Router         /warehouse-tool/delete/{id} [delete]
-func (c Controller) DeleteWarehouseTool(e echo.Context) error {
+func (wc WarehouseToolController) DeleteWarehouseTool(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
-	err = repositories.DeleteWarehouseTool(c.DB, id)
+	err = wc.WarehouseRepository.DeleteWarehouseTool(id)
 
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
@@ -127,7 +132,7 @@ func (c Controller) DeleteWarehouseTool(e echo.Context) error {
 //		@Param          payload body domain.WarehouseToolsUpdateResponse true "payload"
 //	 @Success        200 {object} domain.SuccessResponse
 //		@Router         /warehouse-tool/update/{id} [put]
-func (c Controller) UpdateWareHouseTool(e echo.Context) error {
+func (wc WarehouseToolController) UpdateWareHouseTool(e echo.Context) error {
 	var tool = new(domain.WarehouseTools)
 
 	if err := e.Bind(&tool); err != nil {
@@ -138,7 +143,7 @@ func (c Controller) UpdateWareHouseTool(e echo.Context) error {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
-	err := repositories.UpdateWareHouseTool(c.DB, tool)
+	err := wc.WarehouseRepository.UpdateWareHouseTool(tool)
 
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})

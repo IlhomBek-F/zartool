@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"zartool/api/controller"
 	"zartool/domain"
 
 	"github.com/go-playground/validator"
@@ -42,23 +41,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 	publicRoute := e.Group("/api")
 	protectedRoute := e.Group("/api")
 
-	server := controller.LoginController{
-		DB: *s.DB,
-	}
-
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
 
 	NewLoginRoute(*s.DB, *publicRoute)
 	NewOwnerRoute(*s.DB, *protectedRoute)
 	NewRentalRoute(*s.DB, *protectedRoute)
-
-	{
-		protectedRoute.GET("/warehouse-tools", server.GetWareHouseTools)
-		protectedRoute.PUT("/warehouse-tool/update", server.UpdateWareHouseTool)
-		protectedRoute.DELETE("/warehouse-tool/delete/:id", server.DeleteWarehouseTool)
-		protectedRoute.POST("/warehouse-tool/create", server.AddNewTools)
-	}
+	NewWarehouseRoute(*s.DB, *protectedRoute)
 
 	return e
 }
