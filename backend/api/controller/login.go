@@ -7,15 +7,15 @@ import (
 	_ "zartool/docs"
 	"zartool/domain"
 	"zartool/internal"
-	"zartool/repositories"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-type Controller struct {
-	DB gorm.DB
+type LoginController struct {
+	DB              gorm.DB
+	OwnerRepository domain.OwnerRepository
 }
 
 // Login godoc
@@ -28,7 +28,7 @@ type Controller struct {
 //		@Param          credential  body domain.OwnerPayload true  "Owner credential"
 //	 @Success        200 {object} domain.OwnerResponse
 //		@Router         /auth/login [post]
-func (s Controller) Login(e echo.Context) error {
+func (lc LoginController) Login(e echo.Context) error {
 	ownerCredential := new(domain.OwnerPayload)
 
 	if err := e.Bind(&ownerCredential); err != nil {
@@ -39,7 +39,7 @@ func (s Controller) Login(e echo.Context) error {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
-	owner, err := repositories.GetOwnerByLogin(s.DB, ownerCredential.Login)
+	owner, err := lc.OwnerRepository.GetOwnerByLogin(ownerCredential.Login)
 
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Owner not found"})

@@ -4,6 +4,11 @@ import (
 	"time"
 )
 
+type OwnerRepository interface {
+	GetOwnerByLogin(login string) (Owner, error)
+	CreateOwner(owner Owner) error
+}
+
 type (
 	OwnerPayload struct {
 		Login    string `json:"login" validate:"required,max=100"`

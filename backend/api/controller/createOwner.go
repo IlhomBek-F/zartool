@@ -4,11 +4,16 @@ import (
 	"net/http"
 	"zartool/domain"
 	"zartool/internal"
-	"zartool/repositories"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
+
+type OwnerController struct {
+	Db              gorm.DB
+	OwnerRepository domain.OwnerRepository
+}
 
 // Create owner godoc
 //
@@ -21,7 +26,7 @@ import (
 //		@Param          owner  body domain.OwnerPayload true  "Owner payload"
 //	 @Success        200 {object} domain.SuccessResponse
 //		@Router         /create-owner [post]
-func (s *Controller) CreateOwner(e echo.Context) error {
+func (or *OwnerController) CreateOwner(e echo.Context) error {
 	newOwnerPayload := new(domain.OwnerPayload)
 	var createdOwner domain.Owner
 
@@ -33,7 +38,7 @@ func (s *Controller) CreateOwner(e echo.Context) error {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
-	_, err := repositories.GetOwnerByLogin(s.DB, newOwnerPayload.Login)
+	_, err := or.OwnerRepository.GetOwnerByLogin(newOwnerPayload.Login)
 
 	if err == nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "owner exist with this login"})
@@ -46,7 +51,7 @@ func (s *Controller) CreateOwner(e echo.Context) error {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 
-	if err := repositories.CreateOwner(s.DB, createdOwner); err != nil {
+	if err := or.OwnerRepository.CreateOwner(createdOwner); err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
 

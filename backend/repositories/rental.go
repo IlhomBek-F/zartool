@@ -9,24 +9,32 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateNewRental(db gorm.DB, rentalPayload *domain.User) error {
+type rentalRepository struct {
+	db gorm.DB
+}
+
+func NewRentalRepository(db gorm.DB) domain.RentalRepository {
+	return &rentalRepository{db: db}
+}
+
+func (rentalRepo rentalRepository) CreateNewRental(rentalPayload *domain.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	if err := db.WithContext(ctx).Create(&rentalPayload); err != nil {
+	if err := rentalRepo.db.WithContext(ctx).Create(&rentalPayload); err != nil {
 		return err.Error
 	}
 
-	return db.Save(&rentalPayload).Error
+	return rentalRepo.db.Save(&rentalPayload).Error
 }
 
-func UpdateRental(db gorm.DB, rental *domain.User) error {
+func (rentalRepo rentalRepository) UpdateRental(rental *domain.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	var existingTools []domain.RentTools
 	var updatedRentTools = rental.RentTools
 
-	if err := db.WithContext(ctx).Model(&rental).Association("RentTools").Find(&existingTools); err != nil {
+	if err := rentalRepo.db.WithContext(ctx).Model(&rental).Association("RentTools").Find(&existingTools); err != nil {
 		return err
 	}
 
@@ -44,7 +52,7 @@ func UpdateRental(db gorm.DB, rental *domain.User) error {
 		}
 	}
 
-	transactionError := internal.WithTransaction(ctx, &db, func(tx *gorm.DB) error {
+	transactionError := internal.WithTransaction(ctx, &rentalRepo.db, func(tx *gorm.DB) error {
 		if len(removedTools) > 0 {
 			if err := tx.Select("RentTools").Delete(removedTools).Error; err != nil {
 				return err
@@ -69,30 +77,30 @@ func UpdateRental(db gorm.DB, rental *domain.User) error {
 		return transactionError
 	}
 
-	return db.WithContext(ctx).Save(rental).Error
+	return rentalRepo.db.WithContext(ctx).Save(rental).Error
 }
 
-func DeleteRental(db gorm.DB, rentalId uint) error {
+func (rentalRepo rentalRepository) DeleteRental(rentalId uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	var user domain.User
 	user.ID = rentalId
 
-	return db.WithContext(ctx).Select("RentTools").Delete(&user).Error
+	return rentalRepo.db.WithContext(ctx).Select("RentTools").Delete(&user).Error
 }
 
-func CompleteRental(db gorm.DB, rentalId uint) error {
+func (rentalRepo rentalRepository) CompleteRental(rentalId uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	var user domain.User
 	user.ID = rentalId
 
-	return db.WithContext(ctx).Model(&user).Update("active", false).Error
+	return rentalRepo.db.WithContext(ctx).Model(&user).Update("active", false).Error
 }
 
-func GetRentalReport(db gorm.DB, page int, pageSize int, queryTerm string) (domain.RentalReport, domain.MetaModel, error) {
+func (rentalRepo rentalRepository) GetRentalReport(page int, pageSize int, queryTerm string) (domain.RentalReport, domain.MetaModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -101,19 +109,19 @@ func GetRentalReport(db gorm.DB, page int, pageSize int, queryTerm string) (doma
 	var todayRents []domain.User
 	var meta = domain.MetaModel{Page: page}
 
-	totalCompletedRentResult := db.WithContext(ctx).Model(&domain.User{}).Where("active = ?", false).Count(&totalCompletedRent)
+	totalCompletedRentResult := rentalRepo.db.WithContext(ctx).Model(&domain.User{}).Where("active = ?", false).Count(&totalCompletedRent)
 
 	if totalCompletedRentResult.Error != nil {
 		return domain.RentalReport{}, meta, totalCompletedRentResult.Error
 	}
 
-	totalCreatedRentResult := db.WithContext(ctx).Model(&domain.User{}).Where("active = ?", true).Count(&totalCreatedRent)
+	totalCreatedRentResult := rentalRepo.db.WithContext(ctx).Model(&domain.User{}).Where("active = ?", true).Count(&totalCreatedRent)
 
 	if totalCreatedRentResult.Error != nil {
 		return domain.RentalReport{}, meta, totalCreatedRentResult.Error
 	}
 
-	rentsTotal, err := getTodayRents(*db.WithContext(ctx), &todayRents, page, pageSize, queryTerm)
+	rentsTotal, err := rentalRepo.getTodayRents(&todayRents, page, pageSize, queryTerm)
 
 	if err != nil {
 		return domain.RentalReport{}, meta, err
@@ -130,16 +138,16 @@ func GetRentalReport(db gorm.DB, page int, pageSize int, queryTerm string) (doma
 	return report, meta, nil
 }
 
-func GetRentals(db gorm.DB, page int, pageSize int, queryTerm string) ([]domain.User, domain.MetaModel, error) {
+func (rentalRepo rentalRepository) GetRentals(page int, pageSize int, queryTerm string) ([]domain.User, domain.MetaModel, error) {
 	var rentals []domain.User
 	var count int64
 	var metaData domain.MetaModel
 
-	if countResult := db.Model(&rentals).Count(&count); countResult.Error != nil {
+	if countResult := rentalRepo.db.Model(&rentals).Count(&count); countResult.Error != nil {
 		return nil, metaData, countResult.Error
 	}
 
-	result := db.Scopes(Paginate(page, pageSize)).
+	result := rentalRepo.db.Scopes(Paginate(page, pageSize)).
 		Preload("RentTools").
 		Where("full_name ILIKE ? OR phones LIKE ?", "%"+queryTerm+"%", "%"+queryTerm+"%").
 		Order("created_at DESC").
@@ -155,7 +163,7 @@ func GetRentals(db gorm.DB, page int, pageSize int, queryTerm string) ([]domain.
 	return rentals, metaData, nil
 }
 
-func getTodayRents(db gorm.DB, todayRents *[]domain.User, page int, pageSize int, queryTerm string) (int64, error) {
+func (rentalRepo rentalRepository) getTodayRents(todayRents *[]domain.User, page int, pageSize int, queryTerm string) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -164,13 +172,13 @@ func getTodayRents(db gorm.DB, todayRents *[]domain.User, page int, pageSize int
 	endOfDay := startOfDay.Add(24 * time.Hour).Format("02-01-2006 15:04")
 	formatStartOfdDay := startOfDay.Format("02-01-2006 15:04")
 
-	todayRentsTotalResult := db.WithContext(ctx).Model(domain.User{}).Where("date >= ? AND date < ?", formatStartOfdDay, endOfDay).Count(&total)
+	todayRentsTotalResult := rentalRepo.db.WithContext(ctx).Model(domain.User{}).Where("date >= ? AND date < ?", formatStartOfdDay, endOfDay).Count(&total)
 
 	if todayRentsTotalResult.Error != nil {
 		return 0, todayRentsTotalResult.Error
 	}
 
-	todayRentsResult := db.WithContext(ctx).Scopes(Paginate(page, pageSize)).
+	todayRentsResult := rentalRepo.db.WithContext(ctx).Scopes(Paginate(page, pageSize)).
 		Preload("RentTools").
 		Where("date >= ? AND date < ?", formatStartOfdDay, endOfDay).
 		Where("full_name ILIKE ? OR phones LIKE ?", "%"+queryTerm+"%", "%"+queryTerm+"%").

@@ -42,26 +42,16 @@ func (s *Server) RegisterRoutes() http.Handler {
 	publicRoute := e.Group("/api")
 	protectedRoute := e.Group("/api")
 
-	server := controller.Controller{
+	server := controller.LoginController{
 		DB: *s.DB,
 	}
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
 
-	{
-		publicRoute.POST("/create-owner", server.CreateOwner)
-		publicRoute.POST("/auth/login", server.Login)
-	}
-
-	{
-		protectedRoute.POST("/rental/create", server.CreateNewRental)
-		protectedRoute.PATCH("/rental/update", server.UpdateRental)
-		protectedRoute.DELETE("/rental/delete/:id", server.DeleteRental)
-		protectedRoute.POST("/rental/complete/:id", server.CompleteRental)
-		protectedRoute.GET("/rental/report", server.GetRentalReport)
-		protectedRoute.GET("/rentals", server.GetRentals)
-	}
+	NewLoginRoute(*s.DB, *publicRoute)
+	NewOwnerRoute(*s.DB, *protectedRoute)
+	NewRentalRoute(*s.DB, *protectedRoute)
 
 	{
 		protectedRoute.GET("/warehouse-tools", server.GetWareHouseTools)
