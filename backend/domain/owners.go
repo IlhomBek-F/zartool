@@ -9,6 +9,16 @@ type OwnerRepository interface {
 	CreateOwner(owner Owner) error
 }
 
+type LoginOwnerUsecase interface {
+	GetOwnerByLogin(login string) (Owner, error)
+	GeneretaAccessToken(user Owner, secret string, expiry int) (token string, err error)
+}
+
+type CreateOwnerUsecase interface {
+	GetOwnerByLogin(login string) (Owner, error)
+	CreateOwner(owner Owner) error
+}
+
 type (
 	OwnerPayload struct {
 		Login    string `json:"login" validate:"required,max=100"`

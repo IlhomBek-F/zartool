@@ -10,11 +10,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type LoginController struct {
-	DB              gorm.DB
+	LoginUsecase    domain.LoginOwnerUsecase
 	OwnerRepository domain.OwnerRepository
 }
 
@@ -39,7 +38,7 @@ func (lc LoginController) Login(e echo.Context) error {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
 	}
 
-	owner, err := lc.OwnerRepository.GetOwnerByLogin(ownerCredential.Login)
+	owner, err := lc.LoginUsecase.GetOwnerByLogin(ownerCredential.Login)
 
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Owner not found"})
@@ -51,7 +50,7 @@ func (lc LoginController) Login(e echo.Context) error {
 
 	jwtPrivateKey := os.Getenv("ACCESS_TOKEN_SECRET")
 	accessTokenExpiryHour, _ := strconv.Atoi(os.Getenv("ACCESS_TOKEN_EXPIRY_HOUR"))
-	accessToken, err := internal.GeneretaAccessToken(owner, jwtPrivateKey, accessTokenExpiryHour)
+	accessToken, err := lc.LoginUsecase.GeneretaAccessToken(owner, jwtPrivateKey, accessTokenExpiryHour)
 
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
