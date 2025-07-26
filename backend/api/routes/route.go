@@ -2,9 +2,9 @@ package routes
 
 import (
 	"net/http"
-	"os"
 	"time"
 	"zartool/domain"
+	"zartool/internal/database"
 
 	"github.com/go-playground/validator"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -16,12 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Server struct {
-	Port int
-	DB   *gorm.DB
-}
-
-func (s *Server) RegisterRoutes() http.Handler {
+func RegisterRoutes(db gorm.DB, config database.Config) http.Handler {
 	e := echo.New()
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
@@ -36,18 +31,17 @@ func (s *Server) RegisterRoutes() http.Handler {
 	}))
 
 	e.Validator = &domain.CustomValidator{Validator: validator.New()}
-	secretKey := os.Getenv("ACCESS_TOKEN_SECRET")
 
 	publicRoute := e.Group("/api")
 	protectedRoute := e.Group("/api")
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
+	protectedRoute.Use(echojwt.JWT([]byte(config.AccessTokenSecret)))
 
-	NewLoginRoute(*s.DB, *publicRoute)
-	NewOwnerRoute(*s.DB, *protectedRoute)
-	NewRentalRoute(*s.DB, *protectedRoute)
-	NewWarehouseRoute(*s.DB, *protectedRoute)
+	NewLoginRoute(db, *publicRoute)
+	NewOwnerRoute(db, *protectedRoute)
+	NewRentalRoute(db, *protectedRoute)
+	NewWarehouseRoute(db, *protectedRoute)
 
 	return e
 }

@@ -3,36 +3,21 @@ package database
 import (
 	"fmt"
 	"log"
-	"net/http"
-	"os"
-	"strconv"
-	"time"
-	"zartool/api/routes"
-	"zartool/domain"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var (
-	database   string
-	password   string
-	username   string
-	port       string
-	host       string
-	schema     string
-	dbInstance *gorm.DB
-)
+type Application struct {
+	DB  gorm.DB
+	Env Config
+}
 
-func connectDB() *gorm.DB {
-	loadEnv()
+func App() Application {
+	config := NewConfig()
 
-	if dbInstance != nil {
-		return dbInstance
-	}
-
-	te := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable search_path=%s", host, username, password, database, port, schema)
+	te := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable search_path=%s",
+		config.host, config.username, config.password, config.database, config.DbPort, config.schema)
 
 	db, err := gorm.Open(postgres.Open(te), &gorm.Config{})
 
@@ -40,45 +25,5 @@ func connectDB() *gorm.DB {
 		log.Fatal("Error while connecting to db")
 	}
 
-	return db
-}
-
-func InitServer() *http.Server {
-	db := connectDB()
-
-	db.AutoMigrate(&domain.User{}, &domain.RentTools{})
-	db.AutoMigrate(&domain.WarehouseTools{})
-	db.AutoMigrate(&domain.Owner{})
-
-	portToInt, _ := strconv.Atoi(os.Getenv("PORT"))
-
-	server := routes.Server{
-		Port: portToInt,
-		DB:   db,
-	}
-
-	serverConfig := http.Server{
-		Addr:         fmt.Sprintf(":%d", server.Port),
-		Handler:      server.RegisterRoutes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
-	}
-
-	return &serverConfig
-}
-
-func loadEnv() {
-	err := godotenv.Load("../.env")
-
-	if err != nil {
-		fmt.Println("Error while loading env file")
-	}
-
-	database = os.Getenv("DB_DATABASE")
-	password = os.Getenv("DB_PASSWORD")
-	username = os.Getenv("DB_USERNAME")
-	port = os.Getenv("DB_PORT")
-	host = os.Getenv("DB_HOST")
-	schema = os.Getenv("DB_SCHEMA")
+	return Application{DB: *db, Env: config}
 }

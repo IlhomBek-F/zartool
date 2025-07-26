@@ -6,9 +6,12 @@ import (
 	"log"
 	"net/http"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
+	"zartool/api/routes"
 	_ "zartool/docs"
+	"zartool/domain"
 	"zartool/internal/database"
 )
 
@@ -51,7 +54,7 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 //	@name                        Authorization
 //	@description                 JWT security accessToken. Please add it in the format "Bearer {AccessToken}" to authorize your requests.
 func main() {
-	server := database.InitServer()
+	server := initServer()
 
 	fmt.Println("server is running: ", server.Addr)
 
@@ -71,4 +74,29 @@ func main() {
 
 	// Wait for the graceful shutdown to complete
 	<-done
+}
+
+func initServer() *http.Server {
+	config := database.App()
+	db := config.DB
+
+	db.AutoMigrate(&domain.User{}, &domain.RentTools{})
+	db.AutoMigrate(&domain.WarehouseTools{})
+	db.AutoMigrate(&domain.Owner{})
+
+	port, err := strconv.Atoi(config.Env.Port)
+
+	if err != nil {
+		fmt.Println("Error converting port string into int!")
+	}
+
+	serverConfig := http.Server{
+		Addr:         fmt.Sprintf(":%d", port),
+		Handler:      routes.RegisterRoutes(db, config.Env),
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 30 * time.Second,
+	}
+
+	return &serverConfig
 }

@@ -45,8 +45,8 @@ func (or *OwnerController) CreateOwner(e echo.Context) error {
 	}
 
 	encryptPassword, err := bcrypt.GenerateFromPassword([]byte(newOwnerPayload.Password), bcrypt.DefaultCost)
-	newOwnerPayload.Password = string(encryptPassword)
-
+	createdOwner.Password = string(encryptPassword)
+	createdOwner.Login = newOwnerPayload.Login
 	if err != nil {
 		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
 	}
