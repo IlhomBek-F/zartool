@@ -38,7 +38,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.OwnerPayload"
+                            "$ref": "#/definitions/domain.OwnerPayload"
                         }
                     }
                 ],
@@ -46,7 +46,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.OwnerResponse"
+                            "$ref": "#/definitions/domain.OwnerResponse"
                         }
                     }
                 }
@@ -77,7 +77,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.OwnerPayload"
+                            "$ref": "#/definitions/domain.OwnerPayload"
                         }
                     }
                 ],
@@ -85,7 +85,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -122,7 +122,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -153,7 +153,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/domain.User"
                         }
                     }
                 ],
@@ -161,7 +161,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -233,7 +233,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessRentalResponse"
+                            "$ref": "#/definitions/domain.SuccessRentalResponse"
                         }
                     }
                 }
@@ -264,7 +264,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/domain.User"
                         }
                     }
                 ],
@@ -272,7 +272,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateRentalResponse"
+                            "$ref": "#/definitions/domain.UpdateRentalResponse"
                         }
                     }
                 }
@@ -314,7 +314,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.RentalListResponse"
+                            "$ref": "#/definitions/domain.RentalListResponse"
                         }
                     }
                 }
@@ -344,7 +344,7 @@ const docTemplate = `{
                         "name": "payload",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/models.WarehouseTools"
+                            "$ref": "#/definitions/domain.WarehouseTools"
                         }
                     }
                 ],
@@ -352,7 +352,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.WarehouseToolsCreateResponse"
+                            "$ref": "#/definitions/domain.WarehouseToolsCreateResponse"
                         }
                     }
                 }
@@ -389,7 +389,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -420,7 +420,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.WarehouseToolsUpdateResponse"
+                            "$ref": "#/definitions/domain.WarehouseToolsUpdateResponse"
                         }
                     }
                 ],
@@ -428,7 +428,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -470,7 +470,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.WarehouseToolsResponse"
+                            "$ref": "#/definitions/domain.WarehouseToolsResponse"
                         }
                     }
                 }
@@ -478,7 +478,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Credential": {
+        "domain.Credential": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -492,7 +492,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.MetaModel": {
+        "domain.MetaModel": {
             "type": "object",
             "properties": {
                 "page": {
@@ -506,7 +506,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.OwnerPayload": {
+        "domain.OwnerPayload": {
             "type": "object",
             "required": [
                 "login",
@@ -514,18 +514,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "login": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 3
                 }
             }
         },
-        "models.OwnerResponse": {
+        "domain.OwnerResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.Credential"
+                    "$ref": "#/definitions/domain.Credential"
                 },
                 "message": {
                     "type": "string"
@@ -535,7 +537,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.RentTools": {
+        "domain.RentTools": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -558,33 +560,33 @@ const docTemplate = `{
                 }
             }
         },
-        "models.RentalListResponse": {
+        "domain.RentalListResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.User"
+                        "$ref": "#/definitions/domain.User"
                     }
                 },
                 "message": {
                     "type": "string"
                 },
                 "meta": {
-                    "$ref": "#/definitions/models.MetaModel"
+                    "$ref": "#/definitions/domain.MetaModel"
                 },
                 "status": {
                     "type": "integer"
                 }
             }
         },
-        "models.RentalReport": {
+        "domain.RentalReport": {
             "type": "object",
             "properties": {
                 "rents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.User"
+                        "$ref": "#/definitions/domain.User"
                     }
                 },
                 "total_completed_rent": {
@@ -595,24 +597,24 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SuccessRentalResponse": {
+        "domain.SuccessRentalResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.RentalReport"
+                    "$ref": "#/definitions/domain.RentalReport"
                 },
                 "message": {
                     "type": "string"
                 },
                 "meta": {
-                    "$ref": "#/definitions/models.MetaModel"
+                    "$ref": "#/definitions/domain.MetaModel"
                 },
                 "status": {
                     "type": "integer"
                 }
             }
         },
-        "models.SuccessResponse": {
+        "domain.SuccessResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -623,11 +625,11 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateRentalResponse": {
+        "domain.UpdateRentalResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.User"
+                    "$ref": "#/definitions/domain.User"
                 },
                 "message": {
                     "type": "string"
@@ -637,8 +639,13 @@ const docTemplate = `{
                 }
             }
         },
-        "models.User": {
+        "domain.User": {
             "type": "object",
+            "required": [
+                "date",
+                "full_name",
+                "rent_tools"
+            ],
             "properties": {
                 "active": {
                     "type": "boolean"
@@ -653,7 +660,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "full_name": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 3
                 },
                 "id": {
                     "type": "integer"
@@ -670,7 +678,7 @@ const docTemplate = `{
                 "rent_tools": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.RentTools"
+                        "$ref": "#/definitions/domain.RentTools"
                     }
                 },
                 "updated_at": {
@@ -678,8 +686,12 @@ const docTemplate = `{
                 }
             }
         },
-        "models.WarehouseTools": {
+        "domain.WarehouseTools": {
             "type": "object",
+            "required": [
+                "name",
+                "size"
+            ],
             "properties": {
                 "created_at": {
                     "type": "string"
@@ -698,13 +710,13 @@ const docTemplate = `{
                 }
             }
         },
-        "models.WarehouseToolsCreateResponse": {
+        "domain.WarehouseToolsCreateResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.WarehouseTools"
+                        "$ref": "#/definitions/domain.WarehouseTools"
                     }
                 },
                 "message": {
@@ -715,31 +727,31 @@ const docTemplate = `{
                 }
             }
         },
-        "models.WarehouseToolsResponse": {
+        "domain.WarehouseToolsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.WarehouseTools"
+                        "$ref": "#/definitions/domain.WarehouseTools"
                     }
                 },
                 "message": {
                     "type": "string"
                 },
                 "meta": {
-                    "$ref": "#/definitions/models.MetaModel"
+                    "$ref": "#/definitions/domain.MetaModel"
                 },
                 "status": {
                     "type": "integer"
                 }
             }
         },
-        "models.WarehouseToolsUpdateResponse": {
+        "domain.WarehouseToolsUpdateResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.WarehouseTools"
+                    "$ref": "#/definitions/domain.WarehouseTools"
                 },
                 "message": {
                     "type": "string"

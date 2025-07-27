@@ -36,7 +36,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.OwnerPayload"
+                            "$ref": "#/definitions/domain.OwnerPayload"
                         }
                     }
                 ],
@@ -44,7 +44,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.OwnerResponse"
+                            "$ref": "#/definitions/domain.OwnerResponse"
                         }
                     }
                 }
@@ -75,7 +75,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.OwnerPayload"
+                            "$ref": "#/definitions/domain.OwnerPayload"
                         }
                     }
                 ],
@@ -83,7 +83,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -120,7 +120,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -151,7 +151,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/domain.User"
                         }
                     }
                 ],
@@ -159,7 +159,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -231,7 +231,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessRentalResponse"
+                            "$ref": "#/definitions/domain.SuccessRentalResponse"
                         }
                     }
                 }
@@ -262,7 +262,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/domain.User"
                         }
                     }
                 ],
@@ -270,7 +270,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateRentalResponse"
+                            "$ref": "#/definitions/domain.UpdateRentalResponse"
                         }
                     }
                 }
@@ -312,7 +312,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.RentalListResponse"
+                            "$ref": "#/definitions/domain.RentalListResponse"
                         }
                     }
                 }
@@ -342,7 +342,7 @@
                         "name": "payload",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/models.WarehouseTools"
+                            "$ref": "#/definitions/domain.WarehouseTools"
                         }
                     }
                 ],
@@ -350,7 +350,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.WarehouseToolsCreateResponse"
+                            "$ref": "#/definitions/domain.WarehouseToolsCreateResponse"
                         }
                     }
                 }
@@ -387,7 +387,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -418,7 +418,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.WarehouseToolsUpdateResponse"
+                            "$ref": "#/definitions/domain.WarehouseToolsUpdateResponse"
                         }
                     }
                 ],
@@ -426,7 +426,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "$ref": "#/definitions/domain.SuccessResponse"
                         }
                     }
                 }
@@ -468,7 +468,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.WarehouseToolsResponse"
+                            "$ref": "#/definitions/domain.WarehouseToolsResponse"
                         }
                     }
                 }
@@ -476,7 +476,7 @@
         }
     },
     "definitions": {
-        "models.Credential": {
+        "domain.Credential": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -490,7 +490,7 @@
                 }
             }
         },
-        "models.MetaModel": {
+        "domain.MetaModel": {
             "type": "object",
             "properties": {
                 "page": {
@@ -504,7 +504,7 @@
                 }
             }
         },
-        "models.OwnerPayload": {
+        "domain.OwnerPayload": {
             "type": "object",
             "required": [
                 "login",
@@ -512,18 +512,20 @@
             ],
             "properties": {
                 "login": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 3
                 }
             }
         },
-        "models.OwnerResponse": {
+        "domain.OwnerResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.Credential"
+                    "$ref": "#/definitions/domain.Credential"
                 },
                 "message": {
                     "type": "string"
@@ -533,7 +535,7 @@
                 }
             }
         },
-        "models.RentTools": {
+        "domain.RentTools": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -556,33 +558,33 @@
                 }
             }
         },
-        "models.RentalListResponse": {
+        "domain.RentalListResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.User"
+                        "$ref": "#/definitions/domain.User"
                     }
                 },
                 "message": {
                     "type": "string"
                 },
                 "meta": {
-                    "$ref": "#/definitions/models.MetaModel"
+                    "$ref": "#/definitions/domain.MetaModel"
                 },
                 "status": {
                     "type": "integer"
                 }
             }
         },
-        "models.RentalReport": {
+        "domain.RentalReport": {
             "type": "object",
             "properties": {
                 "rents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.User"
+                        "$ref": "#/definitions/domain.User"
                     }
                 },
                 "total_completed_rent": {
@@ -593,24 +595,24 @@
                 }
             }
         },
-        "models.SuccessRentalResponse": {
+        "domain.SuccessRentalResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.RentalReport"
+                    "$ref": "#/definitions/domain.RentalReport"
                 },
                 "message": {
                     "type": "string"
                 },
                 "meta": {
-                    "$ref": "#/definitions/models.MetaModel"
+                    "$ref": "#/definitions/domain.MetaModel"
                 },
                 "status": {
                     "type": "integer"
                 }
             }
         },
-        "models.SuccessResponse": {
+        "domain.SuccessResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -621,11 +623,11 @@
                 }
             }
         },
-        "models.UpdateRentalResponse": {
+        "domain.UpdateRentalResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.User"
+                    "$ref": "#/definitions/domain.User"
                 },
                 "message": {
                     "type": "string"
@@ -635,8 +637,13 @@
                 }
             }
         },
-        "models.User": {
+        "domain.User": {
             "type": "object",
+            "required": [
+                "date",
+                "full_name",
+                "rent_tools"
+            ],
             "properties": {
                 "active": {
                     "type": "boolean"
@@ -651,7 +658,8 @@
                     "type": "string"
                 },
                 "full_name": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 3
                 },
                 "id": {
                     "type": "integer"
@@ -668,7 +676,7 @@
                 "rent_tools": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.RentTools"
+                        "$ref": "#/definitions/domain.RentTools"
                     }
                 },
                 "updated_at": {
@@ -676,8 +684,12 @@
                 }
             }
         },
-        "models.WarehouseTools": {
+        "domain.WarehouseTools": {
             "type": "object",
+            "required": [
+                "name",
+                "size"
+            ],
             "properties": {
                 "created_at": {
                     "type": "string"
@@ -696,13 +708,13 @@
                 }
             }
         },
-        "models.WarehouseToolsCreateResponse": {
+        "domain.WarehouseToolsCreateResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.WarehouseTools"
+                        "$ref": "#/definitions/domain.WarehouseTools"
                     }
                 },
                 "message": {
@@ -713,31 +725,31 @@
                 }
             }
         },
-        "models.WarehouseToolsResponse": {
+        "domain.WarehouseToolsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.WarehouseTools"
+                        "$ref": "#/definitions/domain.WarehouseTools"
                     }
                 },
                 "message": {
                     "type": "string"
                 },
                 "meta": {
-                    "$ref": "#/definitions/models.MetaModel"
+                    "$ref": "#/definitions/domain.MetaModel"
                 },
                 "status": {
                     "type": "integer"
                 }
             }
         },
-        "models.WarehouseToolsUpdateResponse": {
+        "domain.WarehouseToolsUpdateResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.WarehouseTools"
+                    "$ref": "#/definitions/domain.WarehouseTools"
                 },
                 "message": {
                     "type": "string"
