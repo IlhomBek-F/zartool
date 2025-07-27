@@ -3,6 +3,7 @@ package routes
 import (
 	"zartool/api/controller"
 	"zartool/repositories"
+	"zartool/usecase"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ import (
 func NewWarehouseRoute(db gorm.DB, groupRoute echo.Group) {
 	wr := repositories.NewWarehouseRepository(db)
 	wc := controller.WarehouseToolController{
-		Db:                  db,
+		WarehouseUsecase:    usecase.NewWarehouseUsecase(wr),
 		WarehouseRepository: wr,
 	}
 

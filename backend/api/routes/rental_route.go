@@ -3,6 +3,7 @@ package routes
 import (
 	"zartool/api/controller"
 	"zartool/repositories"
+	"zartool/usecase"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ import (
 func NewRentalRoute(db gorm.DB, groupeRoute echo.Group) {
 	rentalRepo := repositories.NewRentalRepository(db)
 	rentalController := controller.RentalController{
-		Db:               db,
+		RentalUsecase:    usecase.NewRentalUsecase(rentalRepo),
 		RentalRepository: rentalRepo,
 	}
 

@@ -7,6 +7,16 @@ type RentalRepository interface {
 	CompleteRental(rentalId uint) error
 	GetRentalReport(page int, pageSize int, queryTerm string) (RentalReport, MetaModel, error)
 	GetRentals(page int, pageSize int, queryTerm string) ([]User, MetaModel, error)
+	GetRentalById(rentalId uint) (User, error)
+}
+
+type RentalUsecase interface {
+	CreateNewRental(rentalPayload *User) error
+	UpdateRental(rental *User) error
+	DeleteRental(rentalId uint) error
+	CompleteRental(rentalId uint) error
+	GetRentalReport(page int, pageSize int, queryTerm string) (RentalReport, MetaModel, error)
+	GetRentals(page int, pageSize int, queryTerm string) ([]User, MetaModel, error)
 }
 
 type (

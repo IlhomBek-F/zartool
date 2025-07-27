@@ -8,11 +8,10 @@ import (
 	"zartool/internal"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 type WarehouseToolController struct {
-	Db                  gorm.DB
+	WarehouseUsecase    domain.WarehouseUsecase
 	WarehouseRepository domain.WarehouseRepository
 }
 
@@ -34,10 +33,11 @@ func (wc WarehouseToolController) GetWareHouseTools(e echo.Context) error {
 	page, _ := strconv.Atoi(queries.Get("page"))
 	pageSize, _ := strconv.Atoi(queries.Get("page_size"))
 
-	tools, meta, err := wc.WarehouseRepository.GetWareHouseTools(page, pageSize)
+	tools, meta, err := wc.WarehouseUsecase.GetWareHouseTools(page, pageSize)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	resp := domain.WarehouseToolsResponse{
@@ -65,19 +65,22 @@ func (wc WarehouseToolController) AddNewTools(e echo.Context) error {
 	var newTool = new([]domain.WarehouseTools)
 
 	if err := e.Bind(&newTool); err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	for _, tool := range *newTool {
 		if err := e.Validate(tool); err != nil {
-			return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+			errorCode, message := internal.GetErrorCode(err)
+			return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 		}
 	}
 
-	err := wc.WarehouseRepository.AddNewTool(newTool)
+	err := wc.WarehouseUsecase.AddNewTool(newTool)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	resp := domain.WarehouseToolsCreateResponse{
@@ -104,13 +107,15 @@ func (wc WarehouseToolController) DeleteWarehouseTool(e echo.Context) error {
 	id, err := strconv.Atoi(e.Param("id"))
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
-	err = wc.WarehouseRepository.DeleteWarehouseTool(id)
+	err = wc.WarehouseUsecase.DeleteWarehouseTool(id)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	resp := domain.SuccessResponse{
@@ -136,17 +141,20 @@ func (wc WarehouseToolController) UpdateWareHouseTool(e echo.Context) error {
 	var tool = new(domain.WarehouseTools)
 
 	if err := e.Bind(&tool); err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	if err := e.Validate(tool); err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
-	err := wc.WarehouseRepository.UpdateWareHouseTool(tool)
+	err := wc.WarehouseUsecase.UpdateWareHouseTool(tool)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	resp := domain.WarehouseToolsUpdateResponse{

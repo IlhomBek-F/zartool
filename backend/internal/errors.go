@@ -16,17 +16,17 @@ var (
 	ErrBadParamInput = errors.New("given Param is not valid")
 )
 
-func GetErrorCode(err error) int {
+func GetErrorCode(err error) (int, string) {
 	switch err {
 	case ErrInternalServerError:
-		return http.StatusInternalServerError
+		return http.StatusInternalServerError, ErrInternalServerError.Error()
 	case ErrNotFound:
-		return http.StatusNotFound
+		return http.StatusNotFound, ErrNotFound.Error()
 	case ErrConflict:
-		return http.StatusConflict
+		return http.StatusConflict, ErrConflict.Error()
 	case ErrBadParamInput:
-		return http.StatusBadRequest
+		return http.StatusBadRequest, ErrBadParamInput.Error()
 	default:
-		return http.StatusInternalServerError
+		return http.StatusInternalServerError, ErrInternalServerError.Error()
 	}
 }

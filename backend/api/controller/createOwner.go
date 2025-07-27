@@ -30,28 +30,33 @@ func (oc *OwnerController) CreateOwner(e echo.Context) error {
 	var createdOwner domain.Owner
 
 	if err := e.Bind(&newOwnerPayload); err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	if err := e.Validate(newOwnerPayload); err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	_, err := oc.CreateOwnerUsecase.GetOwnerByLogin(newOwnerPayload.Login)
 
 	if err == nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "owner exist with this login"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	encryptPassword, err := bcrypt.GenerateFromPassword([]byte(newOwnerPayload.Password), bcrypt.DefaultCost)
 	createdOwner.Password = string(encryptPassword)
 	createdOwner.Login = newOwnerPayload.Login
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	if err := oc.CreateOwnerUsecase.CreateOwner(createdOwner); err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	resp := domain.SuccessResponse{

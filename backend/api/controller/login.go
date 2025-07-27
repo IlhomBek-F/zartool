@@ -31,17 +31,20 @@ func (lc LoginController) Login(e echo.Context) error {
 	ownerCredential := new(domain.OwnerPayload)
 
 	if err := e.Bind(&ownerCredential); err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	if err := e.Validate(ownerCredential); err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: err.Error()})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	owner, err := lc.LoginUsecase.GetOwnerByLogin(ownerCredential.Login)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Owner not found"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	if bcrypt.CompareHashAndPassword([]byte(owner.Password), []byte(ownerCredential.Password)) != nil {
@@ -53,7 +56,8 @@ func (lc LoginController) Login(e echo.Context) error {
 	accessToken, err := lc.LoginUsecase.GeneretaAccessToken(owner, jwtPrivateKey, accessTokenExpiryHour)
 
 	if err != nil {
-		return e.JSON(internal.GetErrorCode(err), domain.ErrorResponse{Status: internal.GetErrorCode(err), Message: "Internal server error"})
+		errorCode, message := internal.GetErrorCode(err)
+		return e.JSON(errorCode, domain.ErrorResponse{Status: errorCode, Message: message})
 	}
 
 	resp := domain.OwnerResponse{

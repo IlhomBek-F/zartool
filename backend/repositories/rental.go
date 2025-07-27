@@ -84,8 +84,11 @@ func (rentalRepo rentalRepository) DeleteRental(rentalId uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	var user domain.User
-	user.ID = rentalId
+	user, err := rentalRepo.GetRentalById(rentalId)
+
+	if err != nil {
+		return internal.ErrNotFound
+	}
 
 	return rentalRepo.db.WithContext(ctx).Select("RentTools").Delete(&user).Error
 }
@@ -94,8 +97,11 @@ func (rentalRepo rentalRepository) CompleteRental(rentalId uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	var user domain.User
-	user.ID = rentalId
+	user, err := rentalRepo.GetRentalById(rentalId)
+
+	if err != nil {
+		return internal.ErrNotFound
+	}
 
 	return rentalRepo.db.WithContext(ctx).Model(&user).Update("active", false).Error
 }
@@ -189,4 +195,14 @@ func (rentalRepo rentalRepository) getTodayRents(todayRents *[]domain.User, page
 	}
 
 	return total, nil
+}
+
+func (rentalRepo rentalRepository) GetRentalById(rentalId uint) (domain.User, error) {
+	var user domain.User
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	result := rentalRepo.db.WithContext(ctx).First(&user, rentalId)
+
+	return user, result.Error
 }
