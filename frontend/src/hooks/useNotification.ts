@@ -10,7 +10,7 @@ export function useNotification() {
       })
     }
 
-    const error = (description: string) => {
+    const error = (description: string): void => {
       api.error({
         message: "Error",
         description: description

@@ -4,38 +4,27 @@ import dayjs from 'dayjs';
 import type { RentType } from '../core/models/renter-model';
 import { TABLE_PAGE_SIZE } from '../utils/constants';
 import { reportTableColumns } from '../utils/tableUtil';
-import { getRentReport } from '../api';
-import { useEffect, useRef, useState } from 'react';
-import type { Query, ResponseMetaType } from '../core/models/base-model';
-import type { RentReport } from '../core/models/rent-report-model';
+import { useRef } from 'react';
+import type { Query } from '../core/models/base-model';
 import { useNotification } from '../hooks/useNotification';
+import { useReport } from '../hooks/useReport';
 
 const { Search } = Input;
 
 function Report() {
-  const [report, setData] = useState<{meta: ResponseMetaType, reportData: RentReport}>();
+  const {report, getData} = useReport();
   const queryRef = useRef<Query>({page: 1, q: '', page_size: TABLE_PAGE_SIZE});
   const {contextHolder, error} = useNotification();
-  useEffect(() => {
-      getData()
-  }, [])
- 
-  const getData = () => {
-          getRentReport(queryRef.current)
-          .then(({meta, data}) => {
-              setData({meta: meta, reportData: data});
-          }).catch(() => error("Error while getting report"))
-  }
 
   const handleSearch = (q: string) => {
     queryRef.current.page = 1;
     queryRef.current.q = q;
-    getData()
+    getData(queryRef.current, () => error("Error while getting report"))
   }
 
   const handlePageChange = (page: number) => {
     queryRef.current.page = page
-    getData()
+    getData(queryRef.current, () => error("Error while getting report"))
   }
 
     return (

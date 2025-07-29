@@ -1,36 +1,31 @@
 import { Button, Form, Input, Space, Table } from 'antd';
 import { Modal } from '../shared/Modal';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, type ChangeEvent } from 'react';
 import { RentForm } from '../components/RentForm';
-import { completeRent, createRent, deleteRent, getRenters, updateRent } from '../api';
 import type { RentType } from '../core/models/renter-model';
 import type { RentToolType } from '../core/models/rent-tool-model';
-import type { ResponseMetaType } from '../core/models/base-model';
+import type { Query } from '../core/models/base-model';
 import { TABLE_PAGE_SIZE } from '../utils/constants';
 import { renterTableColumns } from '../utils/tableUtil';
 import dayjs from 'dayjs';
 import { useNotification } from '../hooks/useNotification';
+import { useRenters } from '../hooks/useRenters';
 
 const { Search } = Input;
 
 function Renters() {
     const [openModal, setOpenModal] = useState(false);
     const {contextHolder, error, success} = useNotification();
-    const [data, setData] = useState<{meta: ResponseMetaType, rents: RentType[]}>();
+    const {getData, createRent, updateRent, completeRent, deleteRent, data} = useRenters();
     const [editableRent, setEditRent] = useState<RentType | null>(null);
-    const queryRef = useRef({page: 1, q: '', page_size: TABLE_PAGE_SIZE});
+    const queryRef = useRef<Query>({page: 1, q: '', page_size: TABLE_PAGE_SIZE});
     const [form] = Form.useForm();
 
-    useEffect(() => {
-        getData()
-    }, [])
-
     const handleCloseRent = (id: number) => {
-       completeRent(id)
-        .then(() => {
-          getData();
+       completeRent(id, () => error("Error while closing rent"), () => {
+          getData(queryRef.current);
           success("Rent closed successfully")
-        }).catch((err) => error(err.data.message))
+       })
     }
 
     const handleEditRent = ({id, phones, date, ...rest}: RentType) => {
@@ -43,10 +38,7 @@ function Renters() {
     }
 
     const handleDeleteRent = (id: number) => {
-       deleteRent(id)
-       .then(() => {
-         getData();
-       }).catch(() => error("Error while deleting rent"))
+       deleteRent(id, () => error("Error while deleting rent"), () => getData(queryRef.current))
     }
 
     const handleConfirmModal = async () => {
@@ -59,23 +51,20 @@ function Renters() {
                       pre_payment: +rest.pre_payment, 
                       date: `${dayjs(date).format("DD-MM-YYYY")} ${dayjs(new Date()).format("HH:mm")}`};
         
+        const errorResp = () => error("Error while creating new rent");
+        const successResp = () => {
+             form.resetFields();
+             setOpenModal(false);
+             getData(queryRef.current);
+        };
+
         if(editableRent) {
-          updateRent({id: editableRent.id, ...rent, active: true, created_at: editableRent.created_at})
-          .then(() => {
-            form.resetFields();
-            setOpenModal(false);
-            getData();
-            setEditRent(null)
+          updateRent({id: editableRent.id, ...rent, active: true, created_at: editableRent.created_at}, errorResp, () => {
+              successResp()
+              setEditRent(null)
           })
-          .catch(() => error("Error while updating rent"))
         } else {
-           createRent(rent)
-           .then(() => {
-              form.resetFields();
-              setOpenModal(false);
-              getData();
-           })
-           .catch(() => error("Error while creating new rent"))
+           createRent(rent, () => error("Error while creating new rent"), successResp)
         }
     }
 
@@ -85,22 +74,15 @@ function Renters() {
        form.resetFields();
     }
 
-    const getData = () => {
-        getRenters(queryRef.current)
-        .then(({meta, data}) => {
-            setData({meta: meta, rents: data.map((r) => ({...r, key: r.id}))});
-        }).catch(() => error("Error while fetching rents"))
-    }
-
-    const handleSearchChange = (e) => {
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
       queryRef.current.page = 1;
       queryRef.current.q = e.target.value;
-      getData();
+      getData(queryRef.current, () => error("Error while fetching rents"));
     }
 
     const handlePageChange = (page: number) => {
       queryRef.current.page = page;
-      getData()
+      getData(queryRef.current, () => error("Error while fetching rents"));
     }
 
     return (

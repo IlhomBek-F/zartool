@@ -1,12 +1,11 @@
 import { Button, Flex, Form, Input, Table} from "antd";
 import { Modal } from "../shared/Modal";
 import { useEffect, useState } from "react";
-import { addNewTool, deleteTool, getRentTools, updateTool } from "../api";
 import type { WarehouseToolType } from "../core/models/warehouse-tool-model";
-import type { ResponseMetaType } from "../core/models/base-model";
 import { TABLE_PAGE_SIZE } from "../utils/constants";
 import { warehouseTableColumns } from "../utils/tableUtil";
 import { useNotification } from "../hooks/useNotification";
+import { useWarehouse } from "../hooks/useWarehouse";
 
 const formItemLayout = {
   labelCol: {
@@ -22,7 +21,7 @@ const formItemLayout = {
 function Warehouse() {
     const [openModal, setOpenModal] = useState(false);
     const {contextHolder, error} = useNotification();
-    const [dataSource, setTools] = useState<{meta: ResponseMetaType, data: WarehouseToolType[]}>();
+    const {dataSource, getRentTools, updateTool, addNewTool, deleteTool} = useWarehouse();
     const [editToolId, setEditToolId] = useState<number | null>(null)
     const [form] = Form.useForm();
 
@@ -31,31 +30,31 @@ function Warehouse() {
     }, [])
 
     const getTools = (page = 1) => {
-       getRentTools(page)
-        .then(({data, meta}) => {
-           setTools({meta, data: data.map((t) => ({...t, key: t.id}))})
-        }).catch(() => error("Error while getting rent tools"))
+       getRentTools(page, () => error("Error while getting rent tools"))
     }
 
     const handleConfirmModal = async () => {
       const formData = await form.validateFields();
       const {tools} = formData;
 
-      const action = editToolId ? updateTool({...tools[0], id: editToolId}) : addNewTool(tools)
+      const successResp = () => {
+        getTools();
+        setEditToolId(null);
+        form.resetFields();
+        setOpenModal(false);
+      }
       
-      action.then(() => {
-          getTools();
-          setEditToolId(null);
-          form.resetFields();
-          setOpenModal(false);
-      }).catch(() => error("Something went wrong. Please try again"))
+      const errorResp = () => error("Something went wrong. Please try again")
+      
+      if(editToolId) {
+        updateTool({...tools[0], id: editToolId}, errorResp, successResp)
+      } else {
+        addNewTool(tools, errorResp, successResp)
+      }
     }
 
     const handleDeleteTool = (id: number) => {
-       deleteTool(id)
-       .then(() => {
-         getTools()
-       }).catch(() => error("Error while deleting rent tool"))
+       deleteTool(id, () => error("Error while deleting rent tool"), getTools)
     }
 
     const handleEditTool = (tool: WarehouseToolType) => {
