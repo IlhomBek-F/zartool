@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Query, ResponseMetaType } from "../core/models/base-model";
 import type { CreateRentRequestType, RentType, UpdateRentRequestType } from "../core/models/renter-model";
-import { getRenters, createRent as _createRent, updateRent as _updateRent, completeRent as _completeRent, deleteRent as _deleteRent } from "../api";
+import { getRenters, createRent as _createRent, updateRent as _updateRent, completeRent as _completeRent, deleteRent as _deleteRent } from "../api/renter";
 import { TABLE_PAGE_SIZE } from "../utils/constants";
 
 export function useRenters() {

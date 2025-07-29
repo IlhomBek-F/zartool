@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import {login as _login} from "../api/index";
+import {login as _login} from "../api/auth";
 import { getToken } from "../utils/tokenUtil";
 
 type AuthContextType = {
