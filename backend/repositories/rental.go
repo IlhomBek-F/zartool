@@ -115,13 +115,23 @@ func (rentalRepo rentalRepository) GetRentalReport(page int, pageSize int, query
 	var todayRents []domain.User
 	var meta = domain.MetaModel{Page: page}
 
-	totalCompletedRentResult := rentalRepo.db.WithContext(ctx).Model(&domain.User{}).Where("active = ?", false).Count(&totalCompletedRent)
+	startOfDay := time.Now().Truncate(24 * time.Hour)
+	endOfDay := startOfDay.Add(24 * time.Hour).Format("02-01-2006 15:04")
+	formatStartOfdDay := startOfDay.Format("02-01-2006 15:04")
+
+	totalCompletedRentResult := rentalRepo.db.WithContext(ctx).
+		Model(&domain.User{}).
+		Where("active = ? AND date >= ? AND date <= ? ", false, formatStartOfdDay, endOfDay).
+		Count(&totalCompletedRent)
 
 	if totalCompletedRentResult.Error != nil {
 		return domain.RentalReport{}, meta, totalCompletedRentResult.Error
 	}
 
-	totalCreatedRentResult := rentalRepo.db.WithContext(ctx).Model(&domain.User{}).Where("active = ?", true).Count(&totalCreatedRent)
+	totalCreatedRentResult := rentalRepo.db.WithContext(ctx).
+		Model(&domain.User{}).
+		Where("active = ? AND date >= ? AND date <= ? ", true, formatStartOfdDay, endOfDay).
+		Count(&totalCreatedRent)
 
 	if totalCreatedRentResult.Error != nil {
 		return domain.RentalReport{}, meta, totalCreatedRentResult.Error
