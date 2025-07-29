@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Query, ResponseMetaType } from "../core/models/base-model";
 import type { RentReport } from "../core/models/rent-report-model";
-import { getRentReport } from "../api";
 import { TABLE_PAGE_SIZE } from "../utils/constants";
+import { getRentReport } from "../api/renter";
 
 export function useReport() {
     const [report, setData] = useState<{meta: ResponseMetaType, reportData: RentReport}>();

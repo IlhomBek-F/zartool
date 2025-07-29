@@ -3,9 +3,9 @@ import { Button, Card, Form, Input } from "antd"
 import { useForm } from "antd/es/form/Form";
 import { useNavigate } from "react-router-dom"
 import { LOGO_TITLE, ROUTES_PATHS } from "../utils/constants";
-import { login } from "../api";
 import { setToken } from "../utils/tokenUtil";
 import { useNotification } from "../hooks/useNotification";
+import { login } from "../api/auth";
 
 function Login() {
     const [form] = useForm();

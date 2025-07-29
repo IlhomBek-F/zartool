@@ -1,6 +1,6 @@
 import { Button, Flex, Form, Input, Table} from "antd";
 import { Modal } from "../shared/Modal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { WarehouseToolType } from "../core/models/warehouse-tool-model";
 import { TABLE_PAGE_SIZE } from "../utils/constants";
 import { warehouseTableColumns } from "../utils/tableUtil";
@@ -24,10 +24,6 @@ function Warehouse() {
     const {dataSource, getRentTools, updateTool, addNewTool, deleteTool} = useWarehouse();
     const [editToolId, setEditToolId] = useState<number | null>(null)
     const [form] = Form.useForm();
-
-     useEffect(() => {
-       getTools();
-    }, [])
 
     const getTools = (page = 1) => {
        getRentTools(page, () => error("Error while getting rent tools"))

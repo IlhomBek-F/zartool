@@ -7,10 +7,7 @@ import {
   Select,
   type FormInstance,
 } from 'antd';
-import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import { getRentTools } from '../api';
-import type { WarehouseToolType } from '../core/models/warehouse-tool-model';
+import { useWarehouse } from '../hooks/useWarehouse';
 
 const { Option } = Select;
 
@@ -26,15 +23,8 @@ const formItemLayout = {
 };
 
 function RentForm({form}: {form: FormInstance}) {
-  const [tools, setTools] = useState<WarehouseToolType[]>([]);
+  const {dataSource} = useWarehouse();
 
-  useEffect(() => {
-    getRentTools()
-     .then(({data}) => {
-       setTools(data)
-     })
-  }, [])
- 
   return <Form {...formItemLayout} layout='vertical' className='w-full' form={form}>
        <Flex className='w-full'>
            <Form.Item label="Исм, фамилия" name="full_name" className='w-full' hasFeedback  rules={[{ required: true, message: 'Илтимос исм ёки фамилияни киритинг!' }]}>
@@ -70,12 +60,12 @@ function RentForm({form}: {form: FormInstance}) {
                 <Flex align='center' className='w-[98.5%]' key={index}>
                     <Form.Item name={[listItem.name, 'name']} label="Ускуна" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
                         <Select placeholder="ускуна" allowClear>
-                           {tools.map((tool) => <Option value={tool.name}>{tool.name}</Option>)}
+                           {dataSource?.data.map((tool) => <Option value={tool.name}>{tool.name}</Option>)}
                         </Select>
                     </Form.Item>
                     <Form.Item name={[listItem.name, 'size']} label="Размер" hasFeedback className='w-full' rules={[{required: true, message: ''}]}>
                         <Select placeholder="размер" allowClear>
-                           {tools.map((tool) => <Option value={tool.size}>{tool.size}</Option>)}
+                           {dataSource?.data.map((tool) => <Option value={tool.size}>{tool.size}</Option>)}
                         </Select>
                     </Form.Item>
                     <Form.Item name={[listItem.name, 'quantity']} label="Дона" className='w-full' hasFeedback rules={[{required: true, message: ''}]}>
