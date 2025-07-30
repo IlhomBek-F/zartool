@@ -11,7 +11,6 @@ import (
 	"time"
 	"zartool/api/routes"
 	_ "zartool/docs"
-	"zartool/domain"
 	"zartool/internal/database"
 )
 
@@ -79,10 +78,6 @@ func main() {
 func initServer() *http.Server {
 	config := database.App()
 	db := config.DB
-
-	db.AutoMigrate(&domain.User{}, &domain.RentTools{})
-	db.AutoMigrate(&domain.WarehouseTools{})
-	db.AutoMigrate(&domain.Owner{})
 
 	port, err := strconv.Atoi(config.Env.Port)
 
