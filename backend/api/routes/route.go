@@ -39,7 +39,7 @@ func RegisterRoutes(db gorm.DB, config database.Config) http.Handler {
 	protectedRoute.Use(echojwt.JWT([]byte(config.AccessTokenSecret)))
 
 	NewLoginRoute(db, *publicRoute)
-	NewOwnerRoute(db, *protectedRoute)
+	NewOwnerRoute(db, *publicRoute)
 	NewRentalRoute(db, *protectedRoute)
 	NewWarehouseRoute(db, *protectedRoute)
 

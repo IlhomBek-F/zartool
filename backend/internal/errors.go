@@ -14,18 +14,22 @@ var (
 	ErrConflict = errors.New("your Item already exist")
 	// ErrBadParamInput will throw if the given request-body or params is not valid
 	ErrBadParamInput = errors.New("given Param is not valid")
+	// Error user does not exist
+	ErrUserNotFound = errors.New("user does not exist")
 )
 
 func GetErrorCode(err error) (int, string) {
-	switch err {
-	case ErrInternalServerError:
+	switch {
+	case errors.Is(err, ErrInternalServerError):
 		return http.StatusInternalServerError, ErrInternalServerError.Error()
-	case ErrNotFound:
+	case errors.Is(err, ErrNotFound):
 		return http.StatusNotFound, ErrNotFound.Error()
-	case ErrConflict:
+	case errors.Is(err, ErrConflict):
 		return http.StatusConflict, ErrConflict.Error()
-	case ErrBadParamInput:
+	case errors.Is(err, ErrBadParamInput):
 		return http.StatusBadRequest, ErrBadParamInput.Error()
+	case errors.Is(err, ErrUserNotFound):
+		return http.StatusNotFound, ErrUserNotFound.Error()
 	default:
 		return http.StatusInternalServerError, ErrInternalServerError.Error()
 	}
