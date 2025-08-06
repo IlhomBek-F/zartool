@@ -1,7 +1,7 @@
 package database
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -20,10 +20,10 @@ type Config struct {
 }
 
 func NewConfig() Config {
-	err := godotenv.Load("../.env")
+	err := godotenv.Load()
 
 	if err != nil {
-		fmt.Println("Error while loading env file")
+		log.Fatalf("Error loading env file: %v", err)
 	}
 
 	return Config{

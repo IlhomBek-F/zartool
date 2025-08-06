@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  frontend:
+    depends_on:
+      - backend
+    build: './frontend'
+    ports:
+      - 5173:5173
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:3001/api
+    develop:
+      watch:
+        - path: ./frontend/package.json
+          action: rebuild
+        - path: ./frontend/package-lock.json
+          action: rebuild
+        - path: ./frontend
+          target: /usr/src/app
+          action: sync
+  backend:
+    depends_on:
+      - database
+    build: './backend'
+    ports: 
+      - 3001:3001
