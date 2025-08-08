@@ -21,7 +21,6 @@ func RegisterRoutes(db gorm.DB, config database.Config) http.Handler {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Use(configureCORS())
-	e.Use(configureCORS())
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(10))))
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
